@@ -1,0 +1,271 @@
+import { useState, useCallback } from 'react'
+import { useNavigate } from 'react-router-dom'
+import { motion, AnimatePresence } from 'framer-motion'
+import { useDropzone } from 'react-dropzone'
+import { Upload, FileText, X, Sparkles, ArrowLeft, Tag, Plus } from 'lucide-react'
+import { insforge } from '../lib/insforge'
+import { apiRequest } from '../lib/api'
+import { useAuth } from '../contexts/AuthContext'
+import toast from 'react-hot-toast'
+
+export default function ModuleCreate() {
+  const navigate = useNavigate()
+  const { user, token } = useAuth()
+  const [form, setForm] = useState({ title: '', description: '', content: '', tags: [] })
+  const [tagInput, setTagInput] = useState('')
+  const [file, setFile] = useState(null)
+  const [uploading, setUploading] = useState(false)
+  const [saving, setSaving] = useState(false)
+  const [generating, setGenerating] = useState(false)
+  const [moduleId, setModuleId] = useState(null)
+  const [step, setStep] = useState('create') // 'create' | 'generating' | 'done'
+
+  const onDrop = useCallback(accepted => {
+    if (accepted[0]) setFile(accepted[0])
+  }, [])
+
+  const { getRootProps, getInputProps, isDragActive } = useDropzone({
+    onDrop,
+    accept: { 'application/pdf': ['.pdf'], 'text/plain': ['.txt'] },
+    maxFiles: 1,
+    maxSize: 20 * 1024 * 1024
+  })
+
+  function addTag() {
+    const t = tagInput.trim().toLowerCase()
+    if (t && !form.tags.includes(t)) {
+      setForm(f => ({ ...f, tags: [...f.tags, t] }))
+    }
+    setTagInput('')
+  }
+
+  function removeTag(tag) {
+    setForm(f => ({ ...f, tags: f.tags.filter(t => t !== tag) }))
+  }
+
+  async function handleSave() {
+    if (!form.title.trim()) { toast.error('Module title is required'); return }
+    if (!form.content.trim() && !file) { toast.error('Add some content or upload a file'); return }
+    setSaving(true)
+    try {
+      let fileUrl = null
+
+      // Upload file to InsForge Storage if provided
+      if (file) {
+        setUploading(true)
+        const ext = file.name.split('.').pop()
+        const path = `${user.id}/${Date.now()}.${ext}`
+        const { data: storageData, error: storageErr } = await insforge.storage
+          .from('modules')
+          .upload(path, file)
+        setUploading(false)
+        if (storageErr) throw storageErr
+        fileUrl = insforge.storage.from('modules').getPublicUrl(storageData?.key || path) || null
+      }
+
+      // Create module record
+      const { data: mod, error } = await insforge.database
+        .from('modules')
+        .insert([{
+          user_id: user.id,
+          title: form.title.trim(),
+          description: form.description.trim(),
+          content: form.content.trim(),
+          file_url: fileUrl,
+          tags: form.tags
+        }])
+        .select()
+        .single()
+
+      if (error) throw error
+
+      setModuleId(mod.id)
+
+      // Auto-generate AI content
+      setStep('generating')
+      setGenerating(true)
+      setSaving(false)
+
+      const result = await apiRequest(`/api/modules/${mod.id}/generate`, { method: 'POST' }, token)
+      setGenerating(false)
+      setStep('done')
+      toast.success(`Generated ${result.flashcards_count} flashcards & ${result.mcq_count} questions!`)
+    } catch (err) {
+      toast.error(err.message || 'Failed to create module')
+      setSaving(false)
+      setGenerating(false)
+      setStep('create')
+    }
+  }
+
+  return (
+    <div className="page module-create">
+      <div className="page-header">
+        <button className="btn-ghost" onClick={() => navigate('/dashboard')}>
+          <ArrowLeft size={16} /> Dashboard
+        </button>
+      </div>
+
+      <AnimatePresence mode="wait">
+        {step === 'create' && (
+          <motion.div key="create" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }}>
+            <h1>Create a Module</h1>
+            <p className="subtitle">Upload your notes or paste content — AI will generate questions for you.</p>
+
+            <div className="form-card">
+              {/* Title */}
+              <div className="field">
+                <label>Module Title *</label>
+                <input
+                  className="input"
+                  type="text"
+                  placeholder="e.g. Biology Chapter 5 — Cell Division"
+                  value={form.title}
+                  onChange={e => setForm(f => ({ ...f, title: e.target.value }))}
+                  maxLength={120}
+                />
+              </div>
+
+              {/* Content */}
+              <div className="field">
+                <label>Study Content</label>
+                <textarea
+                  className="input textarea"
+                  placeholder="Paste your notes, lesson text, or study material here..."
+                  value={form.content}
+                  onChange={e => setForm(f => ({ ...f, content: e.target.value }))}
+                  rows={8}
+                />
+                <p className="field-hint">{form.content.length} characters</p>
+              </div>
+
+              {/* File upload */}
+              <div className="field">
+                <label>Or Upload a File</label>
+                <div {...getRootProps()} className={`dropzone ${isDragActive ? 'active' : ''} ${file ? 'has-file' : ''}`}>
+                  <input {...getInputProps()} />
+                  {file ? (
+                    <div className="file-preview">
+                      <FileText size={20} />
+                      <span>{file.name}</span>
+                      <button type="button" onClick={e => { e.stopPropagation(); setFile(null) }}>
+                        <X size={14} />
+                      </button>
+                    </div>
+                  ) : (
+                    <div className="dropzone-inner">
+                      <Upload size={24} />
+                      <p>Drop a PDF or TXT file here, or <span>browse</span></p>
+                      <small>Max 20MB</small>
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              {/* Tags */}
+              <div className="field">
+                <label>Tags</label>
+                <div className="tag-input-row">
+                  <input
+                    className="input"
+                    type="text"
+                    placeholder="Add a tag..."
+                    value={tagInput}
+                    onChange={e => setTagInput(e.target.value)}
+                    onKeyDown={e => e.key === 'Enter' && (e.preventDefault(), addTag())}
+                  />
+                  <button type="button" className="btn-ghost" onClick={addTag}><Plus size={16} /></button>
+                </div>
+                <div className="tags-row">
+                  {form.tags.map(t => (
+                    <span key={t} className="tag">
+                      <Tag size={11} /> {t}
+                      <button type="button" onClick={() => removeTag(t)}><X size={11} /></button>
+                    </span>
+                  ))}
+                </div>
+              </div>
+
+              <motion.button
+                className="btn-primary btn-lg"
+                onClick={handleSave}
+                disabled={saving || uploading}
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
+              >
+                {saving || uploading
+                  ? <><span className="spinner" /> {uploading ? 'Uploading...' : 'Saving...'}</>
+                  : <><Sparkles size={18} /> Create & Generate AI Questions</>
+                }
+              </motion.button>
+            </div>
+          </motion.div>
+        )}
+
+        {step === 'generating' && (
+          <motion.div
+            key="generating"
+            className="generating-screen"
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0 }}
+          >
+            <div className="generating-tree">
+              <motion.span
+                animate={{ scale: [1, 1.2, 1], rotate: [0, 5, -5, 0] }}
+                transition={{ repeat: Infinity, duration: 2 }}
+              >
+                🌱
+              </motion.span>
+            </div>
+            <h2>AI is analyzing your content...</h2>
+            <p>Generating flashcards and quiz questions</p>
+            <div className="generating-steps">
+              {['Reading content', 'Identifying key concepts', 'Crafting flashcards', 'Building quiz questions'].map((s, i) => (
+                <motion.div
+                  key={s}
+                  className="gen-step"
+                  initial={{ opacity: 0, x: -20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ delay: i * 0.5 }}
+                >
+                  <span className="gen-dot" />
+                  {s}
+                </motion.div>
+              ))}
+            </div>
+          </motion.div>
+        )}
+
+        {step === 'done' && (
+          <motion.div
+            key="done"
+            className="done-screen"
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
+          >
+            <motion.div
+              animate={{ y: [0, -10, 0] }}
+              transition={{ repeat: Infinity, duration: 2 }}
+              className="done-emoji"
+            >
+              🎉
+            </motion.div>
+            <h2>Module ready!</h2>
+            <p>Your AI-generated study materials are ready.</p>
+            <div className="done-buttons">
+              <button className="btn-primary" onClick={() => navigate(`/modules/${moduleId}`)}>
+                Start Studying
+              </button>
+              <button className="btn-ghost" onClick={() => navigate('/dashboard')}>
+                Go to Dashboard
+              </button>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </div>
+  )
+}
+
+
