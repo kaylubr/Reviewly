@@ -1,122 +1,73 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from './assets/vite.svg'
-import heroImg from './assets/hero.png'
-import './App.css'
+import { BrowserRouter, Routes, Route, Navigate, useLocation } from "react-router-dom"
+import { Toaster } from "react-hot-toast"
+import { AuthProvider, useAuth } from "./contexts/AuthContext"
+import Navbar from "./components/Navbar"
+import Landing from "./pages/Landing"
+import Auth from "./pages/Auth"
+import Dashboard from "./pages/Dashboard"
+import ModuleCreate from "./pages/ModuleCreate"
+import ModuleDetail from "./pages/ModuleDetail"
+import Review from "./pages/Review"
+import Tree from "./pages/Tree"
+import Analytics from "./pages/Analytics"
+import Profile from "./pages/Profile"
 
-function App() {
-  const [count, setCount] = useState(0)
+function AppLayout() {
+  const { user, loading } = useAuth()
+  const location = useLocation()
+  const isPublic = ["/", "/auth"].includes(location.pathname)
+  const isReview = location.pathname.startsWith("/review/")
+
+  if (loading) {
+    return (
+      <div className="app-loading">
+        <div className="loading-tree">
+          <span style={{ fontSize: "3rem" }}>??</span>
+          <p>Loading...</p>
+        </div>
+      </div>
+    )
+  }
 
   return (
-    <>
-      <section id="center">
-        <div className="hero">
-          <img src={heroImg} className="base" width="170" height="179" alt="" />
-          <img src={reactLogo} className="framework" alt="React logo" />
-          <img src={viteLogo} className="vite" alt="Vite logo" />
-        </div>
-        <div>
-          <h1>Get started</h1>
-          <p>
-            Edit <code>src/App.jsx</code> and save to test <code>HMR</code>
-          </p>
-        </div>
-        <button
-          type="button"
-          className="counter"
-          onClick={() => setCount((count) => count + 1)}
-        >
-          Count is {count}
-        </button>
-      </section>
-
-      <div className="ticks"></div>
-
-      <section id="next-steps">
-        <div id="docs">
-          <svg className="icon" role="presentation" aria-hidden="true">
-            <use href="/icons.svg#documentation-icon"></use>
-          </svg>
-          <h2>Documentation</h2>
-          <p>Your questions, answered</p>
-          <ul>
-            <li>
-              <a href="https://vite.dev/" target="_blank">
-                <img className="logo" src={viteLogo} alt="" />
-                Explore Vite
-              </a>
-            </li>
-            <li>
-              <a href="https://react.dev/" target="_blank">
-                <img className="button-icon" src={reactLogo} alt="" />
-                Learn more
-              </a>
-            </li>
-          </ul>
-        </div>
-        <div id="social">
-          <svg className="icon" role="presentation" aria-hidden="true">
-            <use href="/icons.svg#social-icon"></use>
-          </svg>
-          <h2>Connect with us</h2>
-          <p>Join the Vite community</p>
-          <ul>
-            <li>
-              <a href="https://github.com/vitejs/vite" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#github-icon"></use>
-                </svg>
-                GitHub
-              </a>
-            </li>
-            <li>
-              <a href="https://chat.vite.dev/" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#discord-icon"></use>
-                </svg>
-                Discord
-              </a>
-            </li>
-            <li>
-              <a href="https://x.com/vite_js" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#x-icon"></use>
-                </svg>
-                X.com
-              </a>
-            </li>
-            <li>
-              <a href="https://bsky.app/profile/vite.dev" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#bluesky-icon"></use>
-                </svg>
-                Bluesky
-              </a>
-            </li>
-          </ul>
-        </div>
-      </section>
-
-      <div className="ticks"></div>
-      <section id="spacer"></section>
-    </>
+    <div className="app">
+      {user && !isPublic && !isReview && <Navbar />}
+      <main className={`main ${user && !isPublic && !isReview ? "with-nav" : ""}`}>
+        <Routes>
+          <Route path="/" element={!user ? <Landing /> : <Navigate to="/dashboard" />} />
+          <Route path="/auth" element={!user ? <Auth /> : <Navigate to="/dashboard" />} />
+          <Route path="/dashboard" element={user ? <Dashboard /> : <Navigate to="/auth" />} />
+          <Route path="/modules/create" element={user ? <ModuleCreate /> : <Navigate to="/auth" />} />
+          <Route path="/modules/:id" element={user ? <ModuleDetail /> : <Navigate to="/auth" />} />
+          <Route path="/review/:moduleId/:mode" element={user ? <Review /> : <Navigate to="/auth" />} />
+          <Route path="/tree" element={user ? <Tree /> : <Navigate to="/auth" />} />
+          <Route path="/analytics" element={user ? <Analytics /> : <Navigate to="/auth" />} />
+          <Route path="/profile" element={user ? <Profile /> : <Navigate to="/auth" />} />
+          <Route path="*" element={<Navigate to="/" />} />
+        </Routes>
+      </main>
+      <Toaster
+        position="top-right"
+        toastOptions={{
+          style: {
+            background: "var(--bg-card)",
+            color: "var(--text-primary)",
+            border: "1px solid var(--border)",
+            borderRadius: "12px",
+            fontSize: "14px"
+          }
+        }}
+      />
+    </div>
   )
 }
 
-export default App
+export default function App() {
+  return (
+    <BrowserRouter>
+      <AuthProvider>
+        <AppLayout />
+      </AuthProvider>
+    </BrowserRouter>
+  )
+}
