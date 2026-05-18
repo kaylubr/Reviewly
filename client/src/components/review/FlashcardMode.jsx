@@ -9,25 +9,30 @@ export default function FlashcardMode({ questions, onComplete }) {
   const [needReview, setNeedReview] = useState(0)
   const [startTime] = useState(Date.now())
   const [direction, setDirection] = useState(0)
+  const [completed, setCompleted] = useState(false)
 
   const card = questions[index]
   const total = questions.length
   const progress = index / total
 
   function handleKnow() {
+    if (completed) return
     setKnown(k => k + 1)
     next(1)
   }
 
   function handleReview() {
+    if (completed) return
     setNeedReview(n => n + 1)
     next(-1)
   }
 
   function next(dir) {
+    if (completed) return
     setDirection(dir)
     setFlipped(false)
     if (index + 1 >= total) {
+      setCompleted(true)
       const duration = Math.round((Date.now() - startTime) / 1000)
       onComplete({
         correct_answers: known + (dir > 0 ? 1 : 0),

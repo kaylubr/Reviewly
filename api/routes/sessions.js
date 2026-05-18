@@ -143,14 +143,22 @@ router.post('/complete', requireAuth, async (req, res, next) => {
 // GET /api/sessions/history
 router.get('/history', requireAuth, async (req, res, next) => {
   try {
-    const { limit = 20, offset = 0 } = req.query
-    const { data, error } = await insforge.database
+    const offset = Math.max(0, parseInt(req.query.offset, 10) || 0)
+    const limit = Number.isFinite(parseInt(req.query.limit, 10))
+      ? parseInt(req.query.limit, 10)
+      : null
+
+    let query = insforge.database
       .from('sessions')
       .select('*, modules(title)')
       .eq('user_id', req.user.id)
       .order('completed_at', { ascending: false })
-      .range(parseInt(offset), parseInt(offset) + parseInt(limit) - 1)
 
+    if (limit !== null) {
+      query = query.range(offset, offset + limit - 1)
+    }
+
+    const { data, error } = await query
     if (error) throw error
     res.json(data || [])
   } catch (err) {

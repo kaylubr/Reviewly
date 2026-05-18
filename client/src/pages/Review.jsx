@@ -16,7 +16,7 @@ export default function Review() {
   const { token, refreshProfile } = useAuth()
   const [questions, setQuestions] = useState([])
   const [loading, setLoading] = useState(true)
-  const [sessionState, setSessionState] = useState('playing') // 'playing' | 'complete'
+  const [sessionState, setSessionState] = useState('playing') // 'playing' | 'completing' | 'complete'
   const [result, setResult] = useState(null)
 
   useEffect(() => {
@@ -49,22 +49,23 @@ export default function Review() {
   }
 
   async function handleComplete(stats) {
+    setSessionState('completing')
     try {
       const res = await apiRequest('/api/sessions/complete', {
         method: 'POST',
         body: JSON.stringify({ module_id: moduleId, mode, ...stats })
       }, token)
       setResult(res)
-      setSessionState('complete')
       await refreshProfile()
     } catch (err) {
       toast.error('Failed to save session')
       setResult({ xp_earned: stats.correct_answers * 10, new_level: 1, leveled_up: false, new_streak: 1, score: 0, new_achievements: [] })
+    } finally {
       setSessionState('complete')
     }
   }
 
-  if (loading) {
+  if (loading || sessionState === 'completing') {
     return (
       <div className="review-loading">
         <motion.div
@@ -72,7 +73,7 @@ export default function Review() {
           transition={{ repeat: Infinity, duration: 1, ease: 'linear' }}
           className="loading-ring"
         />
-        <p>Loading your session...</p>
+        <p>{loading ? 'Loading your session...' : 'Finalizing your results...'}</p>
       </div>
     )
   }

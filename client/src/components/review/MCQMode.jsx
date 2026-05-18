@@ -7,22 +7,25 @@ export default function MCQMode({ questions, onComplete }) {
   const [selected, setSelected] = useState(null)
   const [answered, setAnswered] = useState(false)
   const [correct, setCorrect] = useState(0)
+  const [completed, setCompleted] = useState(false)
   const [startTime] = useState(Date.now())
 
   const q = questions[index]
   const total = questions.length
 
   function handleSelect(i) {
-    if (answered) return
+    if (answered || completed) return
     setSelected(i)
     setAnswered(true)
     if (i === q.correct_index) setCorrect(c => c + 1)
   }
 
   function handleNext() {
+    if (completed) return
     if (index + 1 >= total) {
+      setCompleted(true)
       onComplete({
-        correct_answers: correct + (selected === q.correct_index ? 0 : 0), // already counted
+        correct_answers: correct,
         total_questions: total,
         duration_seconds: Math.round((Date.now() - startTime) / 1000)
       })

@@ -26,7 +26,7 @@ export default function Analytics() {
     try {
       const [xpRes, sessRes, modsRes] = await Promise.all([
         apiRequest('/api/profile/weekly-xp', {}, token),
-        apiRequest('/api/sessions/history?limit=20', {}, token),
+        apiRequest('/api/sessions/history', {}, token),
         insforge.database.from('modules').select('title, mastery_score, total_sessions').eq('user_id', user.id).limit(8)
       ])
       setWeeklyXp(xpRes || [])

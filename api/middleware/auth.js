@@ -14,7 +14,8 @@ export async function requireAuth(req, res, next) {
 
   const token = authHeader.split(' ')[1]
   logger.debug('auth', `Token prefix: ${token?.substring(0, 20)}...`)
-
+  logger.debug('auth', `InsForge URL: ${process.env.INSFORGE_URL}`)
+  logger.debug('auth', `Anon key present: ${!!process.env.INSFORGE_ANON_KEY}`)
   // Create a user-scoped client to verify the token (isServerMode uses token directly, not localStorage)
   const userClient = createClient({
     baseUrl: process.env.INSFORGE_URL,
