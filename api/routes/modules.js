@@ -190,5 +190,51 @@ router.get('/:id/speed', requireAuth, async (req, res, next) => {
   }
 })
 
+// DELETE /api/modules/:id
+// Deletes a module and all associated data (flashcards, MCQ, sessions)
+router.delete('/:id', requireAuth, async (req, res, next) => {
+  const { id } = req.params
+  const userId = req.user.id
+  try {
+    logger.info('delete', `Start — module=${id} user=${userId}`)
+
+    // Verify ownership
+    const { data: module, error } = await insforge.database
+      .from('modules')
+      .select('id')
+      .eq('id', id)
+      .eq('user_id', userId)
+      .maybeSingle()
+
+    if (error || !module) {
+      logger.warn('delete', `Module not found or unauthorized — id=${id}`)
+      return res.status(404).json({ error: 'Module not found' })
+    }
+
+    // Delete all associated data in parallel
+    logger.debug('delete', `Deleting flashcards, MCQ, and sessions for module=${id}`)
+    await Promise.all([
+      insforge.database.from('flashcards').delete().eq('module_id', id),
+      insforge.database.from('mcq_questions').delete().eq('module_id', id),
+      insforge.database.from('sessions').delete().eq('module_id', id)
+    ])
+
+    // Delete the module
+    const { error: deleteError } = await insforge.database
+      .from('modules')
+      .delete()
+      .eq('id', id)
+      .eq('user_id', userId)
+
+    if (deleteError) throw deleteError
+
+    logger.info('delete', `Done — module=${id} deleted successfully`)
+    res.json({ success: true, message: 'Module deleted' })
+  } catch (err) {
+    logger.error('delete', `Error deleting module=${id}`, err)
+    next(err)
+  }
+})
+
 export default router
 

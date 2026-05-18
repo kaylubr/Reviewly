@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
-import { motion } from 'framer-motion'
-import { ArrowLeft, Play, Zap, Brain, Target, Tag, RotateCcw, Sparkles } from 'lucide-react'
+import { motion, AnimatePresence } from 'framer-motion'
+import { ArrowLeft, Play, Zap, Brain, Target, Tag, RotateCcw, Sparkles, Trash2 } from 'lucide-react'
 import { insforge } from '../lib/insforge'
 import { apiRequest } from '../lib/api'
 import { useAuth } from '../contexts/AuthContext'
@@ -42,6 +42,8 @@ export default function ModuleDetail() {
   const [stats, setStats] = useState({ flashcards: 0, questions: 0 })
   const [loading, setLoading] = useState(true)
   const [regenerating, setRegenerating] = useState(false)
+  const [deleteConfirm, setDeleteConfirm] = useState(false)
+  const [deleting, setDeleting] = useState(false)
 
   useEffect(() => {
     loadModule()
@@ -78,6 +80,19 @@ export default function ModuleDetail() {
     }
   }
 
+  async function handleDelete() {
+    setDeleting(true)
+    try {
+      await apiRequest(`/api/modules/${id}`, { method: 'DELETE' }, token)
+      toast.success('Module deleted successfully')
+      navigate('/dashboard')
+    } catch (err) {
+      toast.error(err.message)
+      setDeleting(false)
+      setDeleteConfirm(false)
+    }
+  }
+
   if (loading) return <div className="page loading-page"><span className="spinner-lg" /></div>
 
   return (
@@ -105,15 +120,64 @@ export default function ModuleDetail() {
             </span>
           </div>
         </div>
-        <button
-          className="btn-ghost regen-btn"
-          onClick={handleRegenerate}
-          disabled={regenerating}
-        >
-          {regenerating ? <span className="spinner" /> : <RotateCcw size={16} />}
-          {regenerating ? 'Regenerating...' : 'Regenerate'}
-        </button>
+        <div className="module-actions">
+          <button
+            className="btn-ghost regen-btn"
+            onClick={handleRegenerate}
+            disabled={regenerating}
+          >
+            {regenerating ? <span className="spinner" /> : <RotateCcw size={16} />}
+            {regenerating ? 'Regenerating...' : 'Regenerate'}
+          </button>
+          <button
+            className="btn-ghost delete-btn"
+            onClick={() => setDeleteConfirm(true)}
+            title="Delete this module"
+          >
+            <Trash2 size={16} />
+          </button>
+        </div>
       </div>
+
+      <AnimatePresence>
+        {deleteConfirm && (
+          <motion.div
+            className="modal-overlay"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            onClick={() => !deleting && setDeleteConfirm(false)}
+          >
+            <motion.div
+              className="modal-dialog"
+              initial={{ scale: 0.9, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.9, opacity: 0 }}
+              onClick={e => e.stopPropagation()}
+            >
+              <h2>Delete Module?</h2>
+              <p>Are you sure you want to delete <strong>{module.title}</strong>? This action cannot be undone and will remove all flashcards, questions, and associated sessions.</p>
+              <div className="modal-actions">
+                <button
+                  className="btn-secondary"
+                  onClick={() => setDeleteConfirm(false)}
+                  disabled={deleting}
+                >
+                  Cancel
+                </button>
+                <button
+                  className="btn-danger"
+                  onClick={handleDelete}
+                  disabled={deleting}
+                >
+                  {deleting ? <span className="spinner" /> : <Trash2 size={14} />}
+                  {deleting ? 'Deleting...' : 'Delete Module'}
+                </button>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       {!module.ai_processed && (
         <motion.div
