@@ -1,59 +1,20 @@
 import { useState, useEffect } from 'react'
-import { motion, AnimatePresence } from 'framer-motion'
+import { motion } from 'framer-motion'
 import { useAuth } from '../contexts/AuthContext'
 import { apiRequest } from '../lib/api'
-import { calcLevel, getTreeStage } from '../lib/utils'
+import { calcLevel } from '../lib/utils'
+import { TreeDeciduous, Sprout, TreePine, Flower2, Star, Lock, Check } from 'lucide-react'
 import XPBar from '../components/XPBar'
 
 const TREE_STAGES = [
-  {
-    level: [1, 4],
-    emoji: '🌱',
-    name: 'Tiny Sapling',
-    desc: 'Your journey begins. A small seed of knowledge in a humble pot.',
-    bg: 'from-green-50 to-emerald-100',
-    particles: ['✨'],
-    env: '🪴'
-  },
-  {
-    level: [5, 9],
-    emoji: '🪴',
-    name: 'Young Tree',
-    desc: 'Roots are strengthening. A curious young tree reaching for the sun.',
-    bg: 'from-emerald-100 to-green-200',
-    particles: ['🍃', '✨'],
-    env: '🌿🪴🌿'
-  },
-  {
-    level: [10, 14],
-    emoji: '🌳',
-    name: 'Leafy Tree',
-    desc: 'Full of leaves, standing proud. Knowledge is flowing through every branch.',
-    bg: 'from-green-200 to-teal-200',
-    particles: ['🍃', '🐦', '✨'],
-    env: '🌿🌳🌿'
-  },
-  {
-    level: [15, 19],
-    emoji: '🌸',
-    name: 'Blooming Tree',
-    desc: 'Flowers bloom — a sign of mastery and growth. Others look up in wonder.',
-    bg: 'from-teal-200 to-pink-100',
-    particles: ['🌸', '🦋', '✨', '🐦'],
-    env: '🌺🌸🌺'
-  },
-  {
-    level: [20, Infinity],
-    emoji: '🌳✨',
-    name: 'Mystical Ancient Tree',
-    desc: 'A magical force of nature. Fireflies dance, wisdom radiates — you are the forest.',
-    bg: 'from-purple-100 to-indigo-200',
-    particles: ['✨', '🌟', '🦋', '🌸', '🔮'],
-    env: '🌟🌳✨🌟'
-  }
+  { level: [1, 4],  icon: Sprout,       name: 'Tiny Sapling',       desc: 'Your journey begins. A small seed of knowledge taking root.' },
+  { level: [5, 9],  icon: TreePine,      name: 'Young Tree',          desc: 'Roots strengthening. A curious young tree reaching for light.' },
+  { level: [10, 14], icon: TreeDeciduous, name: 'Leafy Tree',         desc: 'Full of leaves, standing proud. Knowledge flowing through every branch.' },
+  { level: [15, 19], icon: Flower2,       name: 'Blooming Tree',      desc: 'Flowers bloom — a sign of mastery. Others look up in wonder.' },
+  { level: [20, Infinity], icon: Star,   name: 'Mystical Ancient Tree', desc: 'A force of nature. Wisdom radiates — you are the forest.' },
 ]
 
-function getStageData(level) {
+function getStage(level) {
   return TREE_STAGES.find(s => level >= s.level[0] && level <= s.level[1]) || TREE_STAGES[0]
 }
 
@@ -72,8 +33,8 @@ export default function Tree() {
   }, [token])
 
   const lvlInfo = calcLevel(profile?.xp || 0)
-  const stage = getStageData(lvlInfo.level)
-  const xpToNextLevel = lvlInfo.nextLevelXp - lvlInfo.currentLevelXp
+  const stage = getStage(lvlInfo.level)
+  const xpToNext = lvlInfo.nextLevelXp - lvlInfo.currentLevelXp
   const nextStageLevel = TREE_STAGES.find(s => s.level[0] > lvlInfo.level)?.level[0]
 
   return (
@@ -81,59 +42,46 @@ export default function Tree() {
       <h1>Your Knowledge Tree</h1>
       <p className="subtitle">Each session grows your tree. Keep learning, keep blooming.</p>
 
-      {/* Main tree visualization */}
+      {/* Tree arena */}
       <div className="tree-arena">
         <div className="tree-bg-glow" />
-
-        {/* Floating particles */}
         <div className="tree-particles-container">
-          {stage.particles.flatMap((p, pi) =>
-            [...Array(3)].map((_, j) => (
-              <motion.span
-                key={`${pi}-${j}`}
-                className="tree-particle"
-                initial={{ opacity: 0, y: 0, x: 0 }}
-                animate={{
-                  opacity: [0, 0.8, 0],
-                  y: -(60 + Math.random() * 80),
-                  x: (Math.random() - 0.5) * 120
-                }}
-                transition={{
-                  repeat: Infinity,
-                  duration: 2.5 + Math.random() * 2,
-                  delay: (pi * 3 + j) * 0.4
-                }}
-                style={{
-                  position: 'absolute',
-                  bottom: '20%',
-                  left: `${30 + Math.random() * 40}%`,
-                  fontSize: '1.2rem'
-                }}
-              >
-                {p}
-              </motion.span>
-            ))
-          )}
+          {[...Array(6)].map((_, i) => (
+            <motion.div
+              key={i}
+              className="tree-particle"
+              style={{ position: 'absolute', bottom: '25%', left: `${20 + i * 12}%` }}
+              initial={{ opacity: 0, y: 0 }}
+              animate={{ opacity: [0, 0.7, 0], y: -60 - Math.random() * 40 }}
+              transition={{ repeat: Infinity, duration: 2.5 + i * 0.4, delay: i * 0.5 }}
+            >
+              <div style={{ width: 6, height: 6, borderRadius: '50%', background: 'var(--lime)' }} />
+            </motion.div>
+          ))}
         </div>
 
-        {/* The Tree */}
         <motion.div
           className="main-tree"
           animate={{ y: [0, -10, 0] }}
           transition={{ repeat: Infinity, duration: 4, ease: 'easeInOut' }}
         >
-          <span className="tree-main-emoji">{stage.emoji.split('').join('')}</span>
+          <div className="tree-main-icon">
+            <stage.icon size={56} strokeWidth={1.4} />
+          </div>
         </motion.div>
 
-        {/* Environment */}
-        <div className="tree-environment">{stage.env}</div>
+        <div className="tree-environment">
+          {[...Array(5)].map((_, i) => (
+            <div key={i} className="tree-env-dot" style={{ opacity: 0.3 + i * 0.12 }} />
+          ))}
+        </div>
       </div>
 
       {/* Stage info */}
       <motion.div
         className="stage-info"
         key={lvlInfo.level}
-        initial={{ opacity: 0, y: 20 }}
+        initial={{ opacity: 0, y: 16 }}
         animate={{ opacity: 1, y: 0 }}
       >
         <div className="stage-name-row">
@@ -141,34 +89,38 @@ export default function Tree() {
           <span className="level-badge">Level {lvlInfo.level}</span>
         </div>
         <p className="stage-desc">{stage.desc}</p>
-        <XPBar current={lvlInfo.currentLevelXp} max={lvlInfo.nextLevelXp} level={lvlInfo.level} large />
-        <p className="xp-hint">{xpToNextLevel} XP to level {lvlInfo.level + 1}</p>
+        <div style={{ width: '100%', maxWidth: 360 }}>
+          <XPBar current={lvlInfo.currentLevelXp} max={lvlInfo.nextLevelXp} level={lvlInfo.level} large />
+        </div>
+        <p className="xp-hint">{xpToNext} XP to level {lvlInfo.level + 1}</p>
         {nextStageLevel && (
           <p className="next-stage-hint">
-            🌿 Reach Level {nextStageLevel} to unlock the next tree form!
+            Reach Level {nextStageLevel} to unlock the next tree form
           </p>
         )}
       </motion.div>
 
-      {/* Evolution timeline */}
+      {/* Evolution path */}
       <div className="evolution-section">
         <h2>Evolution Path</h2>
         <div className="evolution-timeline">
           {TREE_STAGES.map((s, i) => {
             const unlocked = lvlInfo.level >= s.level[0]
-            const current = lvlInfo.level >= s.level[0] && lvlInfo.level <= s.level[1]
+            const current  = lvlInfo.level >= s.level[0] && lvlInfo.level <= s.level[1]
             return (
               <motion.div
                 key={i}
                 className={`evolution-step ${unlocked ? 'unlocked' : 'locked'} ${current ? 'current' : ''}`}
-                whileHover={unlocked ? { scale: 1.05 } : {}}
+                whileHover={unlocked ? { scale: 1.04 } : {}}
               >
-                <div className="evo-emoji">
-                  {unlocked ? s.emoji : '🔒'}
+                {current && <span className="evo-current-badge">Current</span>}
+                <div className="evo-icon">
+                  {unlocked
+                    ? <s.icon size={22} strokeWidth={1.8} />
+                    : <Lock size={18} strokeWidth={1.8} />}
                 </div>
                 <p className="evo-name">{s.name}</p>
                 <p className="evo-level">Level {s.level[0]}+</p>
-                {current && <span className="evo-current-badge">Current</span>}
               </motion.div>
             )
           })}
@@ -179,7 +131,7 @@ export default function Tree() {
       <div className="achievements-section">
         <h2>Achievements</h2>
         {loading ? (
-          <div className="ach-loading"><span className="spinner" /></div>
+          <div className="ach-loading"><span className="spinner-lg" /></div>
         ) : (
           <div className="achievements-grid">
             {achievements.all.map(ach => {
@@ -188,13 +140,17 @@ export default function Tree() {
                 <motion.div
                   key={ach.id}
                   className={`achievement-card ${earned ? 'earned' : 'locked'}`}
-                  whileHover={{ scale: 1.04 }}
+                  whileHover={{ scale: 1.03 }}
                 >
-                  <span className="ach-icon">{ach.icon}</span>
+                  <div className="ach-icon">
+                    <Star size={20} strokeWidth={1.8} />
+                  </div>
                   <p className="ach-name">{ach.name}</p>
                   <p className="ach-desc">{ach.description}</p>
                   <span className="ach-xp">+{ach.xp_reward} XP</span>
-                  {earned && <span className="ach-check">✓</span>}
+                  {earned && (
+                    <div className="ach-check"><Check size={12} strokeWidth={3} /></div>
+                  )}
                 </motion.div>
               )
             })}
@@ -204,5 +160,3 @@ export default function Tree() {
     </div>
   )
 }
-
-
