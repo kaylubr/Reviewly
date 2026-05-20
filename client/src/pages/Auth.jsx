@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import { useNavigate, useSearchParams } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
-import { Mail, Lock, User, Eye, EyeOff, ArrowLeft } from 'lucide-react'
+import { Mail, Lock, User, Eye, EyeOff, ArrowLeft, Leaf } from 'lucide-react'
 import { insforge } from '../lib/insforge'
 import { useAuth } from '../contexts/AuthContext'
 import toast from 'react-hot-toast'
@@ -31,9 +31,7 @@ export default function Auth() {
     try {
       if (mode === 'signup') {
         const { data, error } = await insforge.auth.signUp({
-          email: form.email,
-          password: form.password,
-          name: form.name
+          email: form.email, password: form.password, name: form.name,
         })
         if (error) throw error
         if (data?.requireEmailVerification) {
@@ -41,24 +39,19 @@ export default function Auth() {
           toast.success('Check your email for a verification code!')
         } else if (data?.accessToken) {
           await handleAuthSuccess(data.user, data.accessToken)
-          toast.success('Account created! Welcome to Reviewly 🌱')
+          toast.success('Account created! Welcome to Reviewly.')
           navigate('/dashboard')
         }
       } else {
         const { data, error } = await insforge.auth.signInWithPassword({
-          email: form.email,
-          password: form.password
+          email: form.email, password: form.password,
         })
         if (error) {
-          if (error.statusCode === 403) {
-            setStep('verify')
-            toast('Please verify your email first.', { icon: '📧' })
-          } else {
-            throw error
-          }
+          if (error.statusCode === 403) { setStep('verify'); toast('Please verify your email first.') }
+          else throw error
         } else {
           await handleAuthSuccess(data.user, data.accessToken)
-          toast.success('Welcome back! 🌿')
+          toast.success('Welcome back!')
           navigate('/dashboard')
         }
       }
@@ -76,7 +69,7 @@ export default function Auth() {
       const { data, error } = await insforge.auth.verifyEmail({ email: form.email, otp })
       if (error) throw error
       if (data?.accessToken) await handleAuthSuccess(data.user, data.accessToken)
-      toast.success('Email verified! Welcome to Reviewly 🌱')
+      toast.success('Email verified! Welcome to Reviewly.')
       navigate('/dashboard')
     } catch (err) {
       toast.error(err.message || 'Invalid code')
@@ -87,8 +80,7 @@ export default function Auth() {
 
   async function handleOAuth(provider) {
     const { error } = await insforge.auth.signInWithOAuth({
-      provider,
-      redirectTo: `${window.location.origin}/dashboard`
+      provider, redirectTo: `${window.location.origin}/dashboard`,
     })
     if (error) toast.error(error.message)
   }
@@ -97,16 +89,16 @@ export default function Auth() {
     <div className="auth-page">
       <motion.div
         className="auth-card"
-        initial={{ opacity: 0, y: 30 }}
+        initial={{ opacity: 0, y: 24 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5 }}
+        transition={{ duration: 0.45 }}
       >
         <button className="back-btn" onClick={() => navigate('/')}>
-          <ArrowLeft size={16} /> Back
+          <ArrowLeft size={15} /> Back
         </button>
 
         <div className="auth-logo">
-          <span className="tree-icon">🌱</span>
+          <div className="auth-logo-icon"><Leaf size={18} strokeWidth={2.5} /></div>
           <h1>Reviewly</h1>
         </div>
 
@@ -114,23 +106,24 @@ export default function Auth() {
           {step === 'form' ? (
             <motion.div
               key="form"
-              initial={{ opacity: 0, x: 20 }}
+              initial={{ opacity: 0, x: 16 }}
               animate={{ opacity: 1, x: 0 }}
-              exit={{ opacity: 0, x: -20 }}
+              exit={{ opacity: 0, x: -16 }}
             >
               <h2>{mode === 'signup' ? 'Create your account' : 'Welcome back'}</h2>
               <p className="auth-subtitle">
-                {mode === 'signup' ? 'Start growing your knowledge tree today' : 'Continue your learning journey'}
+                {mode === 'signup'
+                  ? 'Start growing your knowledge tree today'
+                  : 'Continue your learning journey'}
               </p>
 
-              {/* OAuth */}
               <div className="oauth-buttons">
                 <button className="oauth-btn" onClick={() => handleOAuth('google')}>
-                  <img src="https://www.google.com/favicon.ico" width={16} height={16} alt="" />
+                  <img src="https://www.google.com/favicon.ico" width={15} height={15} alt="" />
                   Continue with Google
                 </button>
                 <button className="oauth-btn" onClick={() => handleOAuth('github')}>
-                  <span>🐙</span> Continue with GitHub
+                  Continue with GitHub
                 </button>
               </div>
 
@@ -139,52 +132,41 @@ export default function Auth() {
               <form onSubmit={handleSubmit} className="auth-form">
                 {mode === 'signup' && (
                   <div className="input-group">
-                    <User size={16} />
+                    <User size={15} />
                     <input
-                      type="text"
-                      name="name"
-                      placeholder="Full name"
-                      value={form.name}
-                      onChange={handleChange}
-                      required
+                      type="text" name="name" placeholder="Full name"
+                      value={form.name} onChange={handleChange} required
                     />
                   </div>
                 )}
                 <div className="input-group">
-                  <Mail size={16} />
+                  <Mail size={15} />
                   <input
-                    type="email"
-                    name="email"
-                    placeholder="Email address"
-                    value={form.email}
-                    onChange={handleChange}
-                    required
+                    type="email" name="email" placeholder="Email address"
+                    value={form.email} onChange={handleChange} required
                   />
                 </div>
                 <div className="input-group">
-                  <Lock size={16} />
+                  <Lock size={15} />
                   <input
                     type={showPass ? 'text' : 'password'}
-                    name="password"
-                    placeholder="Password"
-                    value={form.password}
-                    onChange={handleChange}
-                    required
-                    minLength={6}
+                    name="password" placeholder="Password"
+                    value={form.password} onChange={handleChange}
+                    required minLength={6}
                   />
                   <button type="button" onClick={() => setShowPass(s => !s)}>
-                    {showPass ? <EyeOff size={16} /> : <Eye size={16} />}
+                    {showPass ? <EyeOff size={15} /> : <Eye size={15} />}
                   </button>
                 </div>
 
                 <motion.button
-                  type="submit"
-                  className="btn-primary w-full"
+                  type="submit" className="btn-primary w-full"
                   disabled={loading}
-                  whileHover={{ scale: 1.02 }}
-                  whileTap={{ scale: 0.98 }}
+                  whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}
                 >
-                  {loading ? <span className="spinner" /> : (mode === 'signup' ? 'Create Account' : 'Sign In')}
+                  {loading
+                    ? <span className="spinner" />
+                    : mode === 'signup' ? 'Create Account' : 'Sign In'}
                 </motion.button>
               </form>
 
@@ -199,40 +181,33 @@ export default function Auth() {
           ) : (
             <motion.div
               key="verify"
-              initial={{ opacity: 0, x: 20 }}
+              initial={{ opacity: 0, x: 16 }}
               animate={{ opacity: 1, x: 0 }}
-              exit={{ opacity: 0, x: -20 }}
+              exit={{ opacity: 0, x: -16 }}
             >
-              <h2>Check your email 📧</h2>
+              <h2>Check your email</h2>
               <p className="auth-subtitle">
                 We sent a 6-digit code to <strong>{form.email}</strong>
               </p>
               <form onSubmit={handleVerify} className="auth-form">
                 <div className="input-group otp-input">
                   <input
-                    type="text"
-                    placeholder="Enter 6-digit code"
+                    type="text" placeholder="Enter 6-digit code"
                     value={otp}
                     onChange={e => setOtp(e.target.value.replace(/\D/g, '').slice(0, 6))}
-                    maxLength={6}
-                    required
+                    maxLength={6} required
                   />
                 </div>
                 <motion.button
-                  type="submit"
-                  className="btn-primary w-full"
+                  type="submit" className="btn-primary w-full"
                   disabled={loading || otp.length !== 6}
-                  whileHover={{ scale: 1.02 }}
-                  whileTap={{ scale: 0.98 }}
+                  whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}
                 >
                   {loading ? <span className="spinner" /> : 'Verify Email'}
                 </motion.button>
               </form>
-              <button
-                className="btn-ghost w-full"
-                onClick={() => setStep('form')}
-              >
-                ← Back
+              <button className="btn-ghost w-full" onClick={() => setStep('form')} style={{ marginTop: '0.75rem' }}>
+                <ArrowLeft size={14} /> Back
               </button>
             </motion.div>
           )}
