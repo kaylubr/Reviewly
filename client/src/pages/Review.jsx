@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
-import { ArrowLeft, X } from 'lucide-react'
+import { X } from 'lucide-react'
 import { apiRequest } from '../lib/api'
 import { useAuth } from '../contexts/AuthContext'
 import FlashcardMode from '../components/review/FlashcardMode'
@@ -10,30 +10,31 @@ import SpeedMode from '../components/review/SpeedMode'
 import SessionComplete from '../components/review/SessionComplete'
 import toast from 'react-hot-toast'
 
+const MODE_LABELS = {
+  flashcard: 'Flashcard Mode',
+  mcq: 'Multiple Choice',
+  speed: 'Speed Round',
+}
+
 export default function Review() {
   const { moduleId, mode } = useParams()
   const navigate = useNavigate()
   const { token, refreshProfile } = useAuth()
   const [questions, setQuestions] = useState([])
   const [loading, setLoading] = useState(true)
-  const [sessionState, setSessionState] = useState('playing') // 'playing' | 'completing' | 'complete'
+  const [sessionState, setSessionState] = useState('playing')
   const [result, setResult] = useState(null)
 
-  useEffect(() => {
-    loadQuestions()
-  }, [moduleId, mode])
+  useEffect(() => { loadQuestions() }, [moduleId, mode])
 
   async function loadQuestions() {
     setLoading(true)
     try {
       let data
-      if (mode === 'flashcard') {
-        data = await apiRequest(`/api/modules/${moduleId}/flashcards`, {}, token)
-      } else if (mode === 'mcq') {
-        data = await apiRequest(`/api/modules/${moduleId}/mcq?count=10`, {}, token)
-      } else if (mode === 'speed') {
-        data = await apiRequest(`/api/modules/${moduleId}/speed`, {}, token)
-      }
+      if (mode === 'flashcard') data = await apiRequest(`/api/modules/${moduleId}/flashcards`, {}, token)
+      else if (mode === 'mcq')   data = await apiRequest(`/api/modules/${moduleId}/mcq?count=10`, {}, token)
+      else if (mode === 'speed') data = await apiRequest(`/api/modules/${moduleId}/speed`, {}, token)
+
       if (!data || data.length === 0) {
         toast.error('No questions found. Please regenerate the module.')
         navigate(`/modules/${moduleId}`)
@@ -43,9 +44,7 @@ export default function Review() {
     } catch (e) {
       toast.error(e.message)
       navigate(`/modules/${moduleId}`)
-    } finally {
-      setLoading(false)
-    }
+    } finally { setLoading(false) }
   }
 
   async function handleComplete(stats) {
@@ -53,16 +52,13 @@ export default function Review() {
     try {
       const res = await apiRequest('/api/sessions/complete', {
         method: 'POST',
-        body: JSON.stringify({ module_id: moduleId, mode, ...stats })
+        body: JSON.stringify({ module_id: moduleId, mode, ...stats }),
       }, token)
       setResult(res)
       await refreshProfile()
-    } catch (err) {
-      toast.error('Failed to save session')
+    } catch {
       setResult({ xp_earned: stats.correct_answers * 10, new_level: 1, leveled_up: false, new_streak: 1, score: 0, new_achievements: [] })
-    } finally {
-      setSessionState('complete')
-    }
+    } finally { setSessionState('complete') }
   }
 
   if (loading || sessionState === 'completing') {
@@ -71,9 +67,11 @@ export default function Review() {
         <motion.div
           animate={{ rotate: 360 }}
           transition={{ repeat: Infinity, duration: 1, ease: 'linear' }}
-          className="loading-ring"
+          style={{ width: 40, height: 40, border: '3px solid var(--border)', borderTopColor: 'var(--lime)', borderRadius: '50%' }}
         />
-        <p>{loading ? 'Loading your session...' : 'Finalizing your results...'}</p>
+        <p style={{ color: 'var(--text-muted)', fontSize: '0.875rem' }}>
+          {loading ? 'Loading your session...' : 'Finalizing results...'}
+        </p>
       </div>
     )
   }
@@ -84,13 +82,10 @@ export default function Review() {
         <>
           <div className="review-topbar">
             <button className="review-exit-btn" onClick={() => navigate(`/modules/${moduleId}`)}>
-              <X size={18} />
+              <X size={17} />
             </button>
-            <div className="mode-label">
-              {mode === 'flashcard' && '🃏 Flashcard Mode'}
-              {mode === 'mcq' && '🎯 Multiple Choice'}
-              {mode === 'speed' && '⚡ Speed Round'}
-            </div>
+            <span className="mode-label">{MODE_LABELS[mode] || mode}</span>
+            <div style={{ width: 36 }} /> {/* spacer for centering */}
           </div>
 
           <AnimatePresence mode="wait">
@@ -109,8 +104,7 @@ export default function Review() {
 
       {sessionState === 'complete' && result && (
         <SessionComplete
-          result={result}
-          mode={mode}
+          result={result} mode={mode}
           onPlayAgain={() => { setSessionState('playing'); loadQuestions() }}
           onDashboard={() => navigate('/dashboard')}
           onModules={() => navigate(`/modules/${moduleId}`)}
@@ -119,5 +113,3 @@ export default function Review() {
     </div>
   )
 }
-
-
