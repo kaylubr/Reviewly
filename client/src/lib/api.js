@@ -21,7 +21,14 @@ export async function apiRequest(path, options = {}, token = null) {
     ...(authToken ? { Authorization: `Bearer ${authToken}` } : {}),
     ...options.headers
   }
-  const res = await fetch(`${API_URL}${path}`, { ...options, headers })
+
+  let res
+  try {
+    res = await fetch(`${API_URL}${path}`, { ...options, headers })
+  } catch (err) {
+    throw new Error('Network request failed. Please check your connection and try again.')
+  }
+
   if (!res.ok) {
     const err = await res.json().catch(() => ({ error: res.statusText }))
     throw new Error(err.error || 'Request failed')

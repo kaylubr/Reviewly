@@ -61,12 +61,24 @@ export default function ModuleCreate() {
       let fileUrl = null
       if (file) {
         setUploading(true)
-        const ext = file.name.split('.').pop()
-        const path = `${user.id}/${Date.now()}.${ext}`
-        const { data: storageData, error: storageErr } = await insforge.storage.from('modules').upload(path, file)
-        setUploading(false)
-        if (storageErr) throw storageErr
-        fileUrl = insforge.storage.from('modules').getPublicUrl(storageData?.key || path) || null
+        try {
+          const ext = file.name.split('.').pop()
+          const path = `${user.id}/${Date.now()}.${ext}`
+          const { data: storageData, error: storageErr } = await insforge.storage.from('modules').upload(path, file)
+          if (storageErr) {
+            const message = storageErr.message || storageErr.error || 'Upload failed. Please try again.'
+            throw new Error(message)
+          }
+          fileUrl = insforge.storage.from('modules').getPublicUrl(storageData?.key || path) || null
+        } catch (uploadErr) {
+          const message = uploadErr.message || ''
+          if (message.includes('failed_fetch') || message.toLowerCase().includes('failed to fetch')) {
+            throw new Error('File upload failed due to a network error. Check your connection and try again.')
+          }
+          throw uploadErr
+        } finally {
+          setUploading(false)
+        }
       }
 
       const { data: mod, error } = await insforge.database
@@ -83,7 +95,12 @@ export default function ModuleCreate() {
       setStep('done')
       toast.success(`Generated ${result.flashcards_count} flashcards & ${result.mcq_count} questions!`)
     } catch (err) {
-      toast.error(err.message || 'Failed to create module')
+      const message = err.message || 'Failed to create module'
+      if (message.includes('failed_fetch') || message.toLowerCase().includes('failed to fetch')) {
+        toast.error('Network request failed. Please check your connection and try again.')
+      } else {
+        toast.error(message)
+      }
       setSaving(false); setStep('create')
     }
   }
