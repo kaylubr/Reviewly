@@ -16,6 +16,8 @@ import startnowImage from '../assets/startnow-image.png'
 import learnMoreIcon from '../assets/learn-more-icon.png'
 import learnMoreWhiteIcon from '../assets/learn-more-white-icon.png'
 
+import brenImage from '../assets/bren.png'
+
 const FEATURES = [
   {
     icon: Brain,
@@ -79,10 +81,12 @@ const MODES = [
 ]
 
 const TEAM = [
-  { initials: 'JR', name: 'Juan Reyes', role: 'Lead Developer', desc: 'Architected the AI integration and review engine.' },
-  { initials: 'ML', name: 'Maria Lim', role: 'UI/UX Designer', desc: 'Designed the interface and knowledge tree system.' },
-  { initials: 'AK', name: 'Anton Ko', role: 'Backend Engineer', desc: 'Built the scoring, XP, and achievement systems.' },
-]
+  { name: 'Cajigal, Vincent James', role: 'Lead Developer', desc: 'Architected the core review engine and built the full-stack infrastructure that powers Reviewly.', linkedin: '#', color: '#0B0B04' },
+  { name: 'Corpus, Daniel Louis', role: 'Frontend Developer', desc: 'Designed and built the user interface, making sure every interaction feels smooth and intuitive.', linkedin: '#', color: '#1a1a2e' },
+  { name: 'Punzalan, Bren Carl', role: 'Backend Developer', desc: 'Handles the AI integration and data pipeline that turns uploaded notes into smart review sessions.', linkedin: '#', color: '#10253F' },
+  { name: 'Reyes, Kyle Benedict', role: 'UI/UX Designer', desc: 'Crafted the visual identity and user experience from the ground up, keeping things clean and focused.', linkedin: 'https://www.linkedin.com/in/kylebreyes/', color: '#2d1b69' },
+  { name: 'Roxas, Joseph', role: 'Product Manager', desc: 'Keeps the team aligned and makes sure Reviewly solves real problems that students actually face.', linkedin: '#', color: '#0B0B04' },
+];
 
 export default function Landing() {
   const navigate = useNavigate()
@@ -101,7 +105,6 @@ export default function Landing() {
         <div className={`landing-nav-links${menuOpen ? ' open' : ''}`}>
           <a href="#howto">How to</a>
           <a href="#features">Features</a>
-          <a href="#modes">Modes</a>
           <a href="#team">Team</a>
           <button className="btn-signin" onClick={() => navigate('/auth?mode=signin')}>Sign In</button>
           <button className="btn-login" onClick={() => navigate('/auth')}>Login</button>
@@ -124,8 +127,10 @@ export default function Landing() {
           </h1>
 
           <p>
-            Upload your notes, let AI generate personalized review sessions, and watch
-            your knowledge tree evolve as you learn.
+            Most students study by reading the same notes over and over, hoping something sticks. It rarely does. Reviewly takes a different approach. 
+            Upload your notes or study material, and we turn it into personalized review sessions that actually test you. 
+            Whether you want quick-fire speed rounds, structured quizzes, or classic flashcards, Reviewly has a mode for the way you learn. 
+            The more you review, the smarter the system gets at knowing what to throw at you next.
           </p>
 
           <div className="hero-cta">
@@ -239,45 +244,33 @@ export default function Landing() {
         </div>
       </section>
 
-      {/* ── Review Modes (dark) ── */}
-      <section className="modes-section" id="modes">
-        <div className="modes-inner">
-          <h2>Three ways to learn</h2>
-          <p className="modes-subtitle">Every mode built to maximise retention and engagement.</p>
-          <div className="modes-grid">
-            {MODES.map((m, i) => (
-              <motion.div
-                key={m.title}
-                className="mode-card"
-                initial={{ opacity: 0, y: 24 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                transition={{ delay: i * 0.1 }}
-                viewport={{ once: true }}
-                whileHover={{ y: -5 }}
-              >
-                <div className="mode-icon">
-                  <m.icon size={20} strokeWidth={2} />
-                </div>
-                <h3>{m.title}</h3>
-                <p>{m.desc}</p>
-              </motion.div>
-            ))}
-          </div>
-        </div>
-      </section>
-
       {/* ── Team ── */}
       <section className="team-section" id="team">
-        <h2>Team</h2>
+        <div className="team-header">
+          <h2>Team</h2>
+          <div>
+            Meet the students behind Reviewly —<br />
+            built out of frustration with bad study habits.
+          </div>
+        </div>
+
         <div className="team-grid">
-          {TEAM.map(member => (
+          {TEAM.map((member, i) => (
             <div key={member.name} className="team-card">
-              <div className="team-avatar">{member.initials}</div>
-              <div>
-                <h4>{member.name}</h4>
-                <p>{member.role}</p>
-                <p className="team-desc">{member.desc}</p>
+              <div className="team-card-top">
+                <div className="team-info">
+                  <h4>{member.name}</h4>
+                  <p className="team-role">{member.role}</p>
+                </div>
+                <a href={member.linkedin || '#'} className="team-linkedin" target="_blank" rel="noreferrer">
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="white">
+                    <path d="M16 8a6 6 0 016 6v7h-4v-7a2 2 0 00-2-2 2 2 0 00-2 2v7h-4v-7a6 6 0 016-6zM2 9h4v12H2z"/>
+                    <circle cx="4" cy="4" r="2" fill="white"/>
+                  </svg>
+                </a>
               </div>
+              <hr className="team-divider" />
+              <p className="team-desc">{member.desc}</p>
             </div>
           ))}
         </div>
