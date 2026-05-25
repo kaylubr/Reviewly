@@ -15,6 +15,7 @@ import progressionTrackingImage from '../assets/progression-tracking-image.svg'
 import startnowImage from '../assets/startnow-image.png'
 import learnMoreIcon from '../assets/learn-more-icon.png'
 import learnMoreWhiteIcon from '../assets/learn-more-white-icon.png'
+import aboutUsImage from '../assets/about-us-image.png'
 
 import brenImage from '../assets/bren.png'
 
@@ -277,32 +278,28 @@ export default function Landing() {
       </section>
 
       {/* ── About ── */}
-      <section className="about-section">
+      <section className="about-section" id='about'>
         <div className="about-inner">
           <div className="about-text">
             <h2>About us</h2>
             <p>
-              Reviewly was built by students, for students. We believe learning should
-              be engaging, measurable, and even a little addictive. By combining AI-generated
-              content with game-like progression, we've created a tool that makes consistent
-              study effortless and rewarding.
+              Reviewly is a school project. Five computer science students, 
+              all tired of the same problem — spending hours reviewing notes the night before an exam 
+              and still blanking out when it mattered. We figured there had to be a better way.
             </p>
             <p style={{ marginTop: '1rem' }}>
-              Our mission: help every learner turn passive notes into active mastery — one
-              session at a time.
+              So we built one. Reviewly turns your own notes into structured review sessions that 
+              actually test you instead of just letting you re-read the same lines. Speed rounds when 
+              you're short on time. Quizzes when you want to go deep. Flashcards when you just need 
+              to drill. All generated from whatever you upload.
             </p>
-            <div className="about-cta">
-              <button
-                className="btn-primary btn-lg"
-                style={{ background: 'var(--lime)', color: 'var(--ink)' }}
-                onClick={() => navigate('/auth')}
-              >
-                Get Started Free <ArrowRight size={17} />
-              </button>
-            </div>
+            <p style={{ marginTop: '1rem' }}>
+              We're just five people who wanted to study smarter and thought 
+              other students might want the same thing.
+            </p>
           </div>
           <div className="about-visual">
-            <TreeDeciduous size={80} strokeWidth={1.2} />
+            <img src={aboutUsImage} alt="About us image" />
           </div>
         </div>
       </section>
