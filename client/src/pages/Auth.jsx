@@ -9,7 +9,7 @@ import toast from 'react-hot-toast'
 export default function Auth() {
   const [searchParams] = useSearchParams()
   const [mode, setMode] = useState(searchParams.get('mode') === 'signin' ? 'signin' : 'signup')
-  const [step, setStep] = useState('form') // 'form' | 'verify'
+  const [step, setStep] = useState('form')
   const [form, setForm] = useState({ name: '', email: '', password: '' })
   const [showPass, setShowPass] = useState(false)
   const [loading, setLoading] = useState(false)

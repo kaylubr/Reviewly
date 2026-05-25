@@ -5,6 +5,7 @@ import {
   Sparkles, BookOpen, Zap, TreeDeciduous, ArrowRight,
   Leaf, ChevronDown, Brain, Target, Flame, Users, Star
 } from 'lucide-react'
+import heroImage from '../assets/hero-image.png'
 
 const FEATURES = [
   {
@@ -111,8 +112,9 @@ export default function Landing() {
           </div>
 
           <h1>
-            Study smarter.<br />
-            <span>Grow your tree.</span>
+            Reviewly the<br />
+            Friendly AI<br />
+            Powered Reviewer.
           </h1>
 
           <p>
@@ -138,29 +140,7 @@ export default function Landing() {
           </div>
         </motion.div>
 
-        <motion.div
-          className="hero-visual"
-          initial={{ opacity: 0, scale: 0.88 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ duration: 0.7, delay: 0.2 }}
-        >
-          <div className="hero-visual-card">
-            <motion.div
-              className="hero-visual-glow"
-              animate={{ scale: [1, 1.06, 1] }}
-              transition={{ repeat: Infinity, duration: 3, ease: 'easeInOut' }}
-            >
-              <TreeDeciduous size={64} strokeWidth={1.5} />
-            </motion.div>
-            <h3>Your Knowledge Tree</h3>
-            <p>Level up as you review and master your material</p>
-            <div className="hero-stats">
-              <span className="hero-stat-pill">Level 12</span>
-              <span className="hero-stat-pill">14-day streak</span>
-              <span className="hero-stat-pill">47 sessions</span>
-            </div>
-          </div>
-        </motion.div>
+        <img src={heroImage} alt="Hero image" />
       </section>
 
       {/* ── Features ── */}
