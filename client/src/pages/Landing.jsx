@@ -1,10 +1,6 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { motion } from 'framer-motion'
-import {
-  Sparkles, BookOpen, Zap, TreeDeciduous, ArrowRight,
-  Leaf, ChevronDown, Brain, Target, Flame, Users, Star
-} from 'lucide-react'
 
 import heroImage from '../assets/hero-image.png'
 import reviewlyLogo from '../assets/reviewly-logo.png'
@@ -80,6 +76,7 @@ const TEAM = [
 export default function Landing() {
   const navigate = useNavigate()
   const [openHow, setOpenHow] = useState(null)
+  const [menuOpen, setMenuOpen] = useState(false)
 
   return (
     <div className="landing">
@@ -89,11 +86,17 @@ export default function Landing() {
           <div className="logo-icon"><img src={reviewlyLogo} alt="reviewly logo" /></div>
           <span>Reviewly</span>
         </div>
-        <div style={{ display: 'flex', gap: '1.5rem', fontSize: '1rem', fontWeight: 600, color: 'var(--text-secondary)' }}>
-          <a href="#features" style={{ color: 'inherit', transition: 'color 0.15s' }}>Features</a>
-          <a href="#modes" style={{ color: 'inherit', transition: 'color 0.15s' }}>Modes</a>
-          <a href="#team" style={{ color: 'inherit', transition: 'color 0.15s' }}>Team</a>
-          <button className='btn-signin' onClick={() => navigate('/auth?mode=signin')}>Sign In</button>
+
+        <button className="landing-nav-toggle" onClick={() => setMenuOpen(o => !o)} aria-label="Toggle menu">
+          <span /><span /><span />
+        </button>
+
+        <div className={`landing-nav-links${menuOpen ? ' open' : ''}`}>
+          <a href="#howto">How to</a>
+          <a href="#features">Features</a>
+          <a href="#modes">Modes</a>
+          <a href="#team">Team</a>
+          <button className="btn-signin" onClick={() => navigate('/auth?mode=signin')}>Sign In</button>
           <button className="btn-login" onClick={() => navigate('/auth')}>Login</button>
         </div>
       </nav>
@@ -168,8 +171,14 @@ export default function Landing() {
       </section>
 
       {/* ── How to Use ── */}
-      <section className="howto-section">
-        <h2>How to use</h2>
+      <section className="howto-section" id='howto'>
+        <div className="howto-section-header">
+          <h2>How to use:</h2>
+          <div>
+            Step-by-Step Guide to Achieving <br />
+            Your Dream Score
+          </div>
+        </div>
         <div className="howto-list">
           {HOW_TO.map((item, i) => (
             <div
@@ -191,7 +200,9 @@ export default function Landing() {
                   </motion.p>
                 )}
               </div>
-              <ChevronDown size={18} className="howto-chevron" />
+              <button className='howto-toggle'>
+                {openHow === i ? '-' : '+'}
+              </button>
             </div>
           ))}
         </div>
