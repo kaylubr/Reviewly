@@ -5,7 +5,9 @@ import {
   Sparkles, BookOpen, Zap, TreeDeciduous, ArrowRight,
   Leaf, ChevronDown, Brain, Target, Flame, Users, Star
 } from 'lucide-react'
+
 import heroImage from '../assets/hero-image.png'
+import reviewlyLogo from '../assets/reviewly-logo.png'
 
 const FEATURES = [
   {
@@ -83,18 +85,16 @@ export default function Landing() {
     <div className="landing">
       {/* ── Navbar ── */}
       <nav className="landing-nav">
-        <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', fontFamily: 'var(--font-display)', fontWeight: 800, fontSize: '1.15rem' }}>
-          <div className="logo-icon"><Leaf size={18} strokeWidth={2.5} /></div>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', fontFamily: 'var(--font-display)', fontWeight: 600, fontSize: '1.15rem', flex: '1' }}>
+          <div className="logo-icon"><img src={reviewlyLogo} alt="reviewly logo" /></div>
           <span>Reviewly</span>
         </div>
-        <div style={{ display: 'flex', gap: '1.5rem', fontSize: '0.875rem', fontWeight: 600, color: 'var(--text-secondary)' }}>
+        <div style={{ display: 'flex', gap: '1.5rem', fontSize: '1rem', fontWeight: 600, color: 'var(--text-secondary)' }}>
           <a href="#features" style={{ color: 'inherit', transition: 'color 0.15s' }}>Features</a>
           <a href="#modes" style={{ color: 'inherit', transition: 'color 0.15s' }}>Modes</a>
           <a href="#team" style={{ color: 'inherit', transition: 'color 0.15s' }}>Team</a>
-        </div>
-        <div style={{ display: 'flex', gap: '0.75rem' }}>
-          <button className="btn-ghost btn-sm" onClick={() => navigate('/auth?mode=signin')}>Sign In</button>
-          <button className="btn-primary btn-sm" onClick={() => navigate('/auth')}>Get Started</button>
+          <button className='btn-signin' onClick={() => navigate('/auth?mode=signin')}>Sign In</button>
+          <button className="btn-login" onClick={() => navigate('/auth')}>Login</button>
         </div>
       </nav>
 
