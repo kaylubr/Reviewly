@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { Check, X, ChevronRight } from 'lucide-react'
+import { Check, X, RotateCcw } from 'lucide-react'
 
 export default function FlashcardMode({ questions, onComplete }) {
   const [index, setIndex] = useState(0)
@@ -8,7 +8,6 @@ export default function FlashcardMode({ questions, onComplete }) {
   const [known, setKnown] = useState(0)
   const [needReview, setNeedReview] = useState(0)
   const [startTime] = useState(Date.now())
-  const [direction, setDirection] = useState(0)
   const [completed, setCompleted] = useState(false)
 
   const card = questions[index]
@@ -17,99 +16,101 @@ export default function FlashcardMode({ questions, onComplete }) {
 
   function handleKnow() {
     if (completed) return
-    setKnown(k => k + 1)
-    next(1)
+    const next = known + 1
+    setKnown(next)
+    advance(1, next)
   }
 
   function handleReview() {
     if (completed) return
     setNeedReview(n => n + 1)
-    next(-1)
+    advance(-1, known)
   }
 
-  function next(dir) {
-    if (completed) return
-    setDirection(dir)
+  function advance(dir, knownCount) {
     setFlipped(false)
     if (index + 1 >= total) {
       setCompleted(true)
-      const duration = Math.round((Date.now() - startTime) / 1000)
       onComplete({
-        correct_answers: known + (dir > 0 ? 1 : 0),
+        correct_answers: knownCount,
         total_questions: total,
-        duration_seconds: duration
+        duration_seconds: Math.round((Date.now() - startTime) / 1000),
       })
     } else {
-      setTimeout(() => setIndex(i => i + 1), 150)
+      setTimeout(() => setIndex(i => i + 1), 160)
     }
   }
 
   return (
     <div className="flashcard-mode">
-      {/* Progress bar */}
       <div className="progress-bar-container">
         <div className="progress-bar" style={{ width: `${progress * 100}%` }} />
       </div>
       <p className="progress-text">{index + 1} / {total}</p>
 
-      {/* Card */}
       <div className="flashcard-scene" onClick={() => setFlipped(f => !f)}>
         <AnimatePresence mode="wait">
           <motion.div
-            key={index + (flipped ? '-back' : '-front')}
+            key={index + (flipped ? '-b' : '-f')}
             className={`flashcard ${flipped ? 'back' : 'front'}`}
-            initial={{ opacity: 0, rotateY: flipped ? -90 : 90 }}
-            animate={{ opacity: 1, rotateY: 0 }}
-            exit={{ opacity: 0, rotateY: flipped ? 90 : -90 }}
-            transition={{ duration: 0.3 }}
+            initial={{ opacity: 0, scale: 0.96 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0, scale: 0.96 }}
+            transition={{ duration: 0.22 }}
           >
             <div className="card-face-label">{flipped ? 'Answer' : 'Question'}</div>
             <p className="card-text">{flipped ? card.answer : card.question}</p>
             {!flipped && (
-              <span className="flip-hint">Click to reveal answer</span>
+              <span className="flip-hint">
+                <RotateCcw size={13} style={{ display: 'inline', marginRight: 4 }} />
+                Click to reveal answer
+              </span>
             )}
           </motion.div>
         </AnimatePresence>
       </div>
 
-      {/* Difficulty badge */}
       <div className="difficulty-row">
         <DifficultyBadge level={card.difficulty} />
       </div>
 
-      {/* Action buttons */}
       <AnimatePresence>
         {flipped && (
           <motion.div
             className="flashcard-actions"
-            initial={{ opacity: 0, y: 20 }}
+            initial={{ opacity: 0, y: 18 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0 }}
           >
             <motion.button
               className="btn-need-review"
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
+              whileHover={{ scale: 1.04 }}
+              whileTap={{ scale: 0.96 }}
               onClick={handleReview}
             >
-              <X size={18} /> Need Review
+              <X size={17} /> Need Review
             </motion.button>
             <motion.button
               className="btn-know-it"
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
+              whileHover={{ scale: 1.04 }}
+              whileTap={{ scale: 0.96 }}
               onClick={handleKnow}
             >
-              <Check size={18} /> I Know This
+              <Check size={17} /> I Know This
             </motion.button>
           </motion.div>
         )}
       </AnimatePresence>
 
-      {/* Mini stats */}
       <div className="flashcard-stats">
-        <span className="stat-known">✓ {known}</span>
-        <span className="stat-review">↩ {needReview}</span>
+        <span className="stat-known">
+          <Check size={14} style={{ display: 'inline', marginRight: 4 }} />
+          {known} known
+        </span>
+        <span className="stat-review">
+          <X size={14} style={{ display: 'inline', marginRight: 4 }} />
+          {needReview} review
+        </span>
       </div>
     </div>
   )
@@ -118,6 +119,7 @@ export default function FlashcardMode({ questions, onComplete }) {
 function DifficultyBadge({ level }) {
   const labels = ['', 'Easy', 'Medium', 'Hard']
   const colors = ['', 'easy', 'medium', 'hard']
+  if (!level) return null
   return (
     <span className={`difficulty-badge diff-${colors[level]}`}>
       {labels[level]}
