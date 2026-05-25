@@ -98,10 +98,6 @@ export default function Landing() {
           <span>Reviewly</span>
         </div>
 
-        <button className="landing-nav-toggle" onClick={() => setMenuOpen(o => !o)} aria-label="Toggle menu">
-          <span /><span /><span />
-        </button>
-
         <div className={`landing-nav-links${menuOpen ? ' open' : ''}`}>
           <a href="#howto">How to</a>
           <a href="#features">Features</a>
@@ -120,10 +116,6 @@ export default function Landing() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6 }}
         >
-          <div className="hero-badge">
-            <Sparkles size={13} strokeWidth={2.5} />
-            AI-Powered Learning
-          </div>
 
           <h1>
             Reviewly the<br />
@@ -138,19 +130,13 @@ export default function Landing() {
 
           <div className="hero-cta">
             <motion.button
-              className="btn-primary btn-lg"
+              className="hero-cta-button"
               whileHover={{ scale: 1.04 }}
               whileTap={{ scale: 0.97 }}
               onClick={() => navigate('/auth')}
             >
-              Start Growing <ArrowRight size={17} />
+              Start an exam
             </motion.button>
-            <button
-              className="btn-ghost btn-lg"
-              onClick={() => navigate('/auth?mode=signin')}
-            >
-              Sign In
-            </button>
           </div>
         </motion.div>
 
