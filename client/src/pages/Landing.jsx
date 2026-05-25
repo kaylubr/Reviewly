@@ -1,9 +1,20 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { motion } from 'framer-motion'
+import {
+  Sparkles, BookOpen, Zap, TreeDeciduous, ArrowRight,
+  Leaf, Brain, Target, Flame, Users,
+} from 'lucide-react'
 
 import heroImage from '../assets/hero-image.png'
 import reviewlyLogo from '../assets/reviewly-logo.png'
+import speedroundImage from '../assets/speedround-image.svg'
+import quiztypeImage from '../assets/quiztype-image.png'
+import flashcardImage from '../assets/flashcard-image.svg'
+import progressionTrackingImage from '../assets/progression-tracking-image.svg'
+import startnowImage from '../assets/startnow-image.png'
+import learnMoreIcon from '../assets/learn-more-icon.png'
+import learnMoreWhiteIcon from '../assets/learn-more-white-icon.png'
 
 const FEATURES = [
   {
@@ -148,27 +159,61 @@ export default function Landing() {
 
       {/* ── Features ── */}
       <section className="features-section" id="features">
-        <h2>Everything you need to master any subject</h2>
-        <p className="features-subtitle">One platform. Three modes. Infinite progress.</p>
-        <div className="features-grid">
-          {FEATURES.map((f, i) => (
-            <motion.div
-              key={f.title}
-              className="feature-card"
-              initial={{ opacity: 0, y: 24 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              transition={{ delay: i * 0.08 }}
-              viewport={{ once: true }}
-            >
-              <div className="feature-icon">
-                <f.icon size={22} strokeWidth={2} />
-              </div>
-              <h3>{f.title}</h3>
-              <p>{f.desc}</p>
-            </motion.div>
-          ))}
+        <div className="features-section-header">
+          <h2>Let's Go!:</h2>
+          <div>
+            Study smarter, not harder. Built for how you actually learn.<br />
+            Speed rounds, quizzes, and flashcards all in one place.
+          </div>
         </div>
-      </section>
+        <div className="features-grid">
+          {/* Speed Round */}
+          <motion.div className="feat-card feat-white" initial={{ opacity: 0, y: 24 }} whileInView={{ opacity: 1, y: 0 }} transition={{ delay: 0 }} viewport={{ once: true }}>
+            <h3><span className="feat-highlight">Speed Round<br />Examination</span></h3>
+            <img src={speedroundImage} alt="Speed Round" className="feat-img" />
+            <button className="feat-learn" onClick={() => navigate('/auth')}>
+              <img src={learnMoreIcon} alt="" /> Learn more
+            </button>
+          </motion.div>
+
+          {/* Quiz Type */}
+          <motion.div className="feat-card feat-lime" initial={{ opacity: 0, y: 24 }} whileInView={{ opacity: 1, y: 0 }} transition={{ delay: 0.08 }} viewport={{ once: true }}>
+            <h3><span className="feat-highlight">Quiz Type<br />Examination</span></h3>
+            <img src={quiztypeImage} alt="Quiz Type" className="feat-img" />
+            <button className="feat-learn" onClick={() => navigate('/auth')}>
+              <img src={learnMoreIcon} alt="" /> Learn more
+            </button>
+          </motion.div>
+
+          {/* Flashcard */}
+          <motion.div className="feat-card feat-dark" initial={{ opacity: 0, y: 24 }} whileInView={{ opacity: 1, y: 0 }} transition={{ delay: 0.16 }} viewport={{ once: true }}>
+            <h3><span className="feat-highlight">Flashcard<br />Game</span></h3>
+            <img src={flashcardImage} alt="Flashcard" className="feat-img" />
+            <button className="feat-learn feat-learn-white" onClick={() => navigate('/auth')}>
+              <img src={learnMoreWhiteIcon} alt="" /> Learn more
+            </button>
+          </motion.div>
+
+          {/* Progression Tracking */}
+          <motion.div className="feat-card feat-white" initial={{ opacity: 0, y: 24 }} whileInView={{ opacity: 1, y: 0 }} transition={{ delay: 0.24 }} viewport={{ once: true }}>
+            <h3><span className="feat-highlight">Progression<br />Tracking</span></h3>
+            <img src={progressionTrackingImage} alt="Progression Tracking" className="feat-img" />
+            <button className="feat-learn" onClick={() => navigate('/auth')}>
+              <img src={learnMoreIcon} alt="" /> Learn more
+            </button>
+          </motion.div>
+
+          {/* Let's make things happen */}
+          <motion.div className="feat-card feat-cta" initial={{ opacity: 0, y: 24 }} whileInView={{ opacity: 1, y: 0 }} transition={{ delay: 0.32 }} viewport={{ once: true }}>
+            <div className="feat-cta-text">
+              <h3>Let's make things happen</h3>
+              <p>Real students forget 70% of what they study within a day. Reviewly fixes that with smart review sessions that repeat what you need, exactly when you need it.</p>
+              <button className="feat-cta-btn" onClick={() => navigate('/auth')}>Start Now!</button>
+            </div>
+            <img src={startnowImage} alt="Start Now" className="feat-cta-img" />
+          </motion.div>
+        </div>
+    </section>
 
       {/* ── How to Use ── */}
       <section className="howto-section" id='howto'>
