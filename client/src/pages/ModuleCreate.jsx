@@ -24,8 +24,22 @@ export default function ModuleCreate() {
     if (accepted[0]) setFile(accepted[0])
   }, [])
 
+  const onDropRejected = useCallback(rejectedFiles => {
+    const error = rejectedFiles?.[0]?.errors?.[0]
+    if (error?.code === 'file-too-large') {
+      toast.error('File is too large. Maximum size is 20MB.')
+      return
+    }
+    if (error?.code === 'file-invalid-type') {
+      toast.error('Only PDF or TXT files are allowed.')
+      return
+    }
+    toast.error(error?.message || 'Failed to upload file. Please try a different file.')
+  }, [])
+
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
     onDrop,
+    onDropRejected,
     accept: { 'application/pdf': ['.pdf'], 'text/plain': ['.txt'] },
     maxFiles: 1,
     maxSize: 20 * 1024 * 1024
