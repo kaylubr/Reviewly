@@ -26,10 +26,24 @@ export default function ModuleCreate() {
   const [moduleId, setModuleId] = useState(null)
   const [step, setStep] = useState('create') // 'create' | 'generating' | 'done'
 
-  const onDrop = useCallback(accepted => { if (accepted[0]) setFile(accepted[0]) }, [])
+  const onDrop = useCallback((accepted, rejected) => {
+    if (rejected && rejected[0]) {
+      const codes = (rejected[0].errors || []).map(e => e.code)
+      if (codes.includes('file-too-large')) {
+        toast.error('File is too large. Maximum 20 MB allowed.')
+      } else {
+        toast.error(rejected[0].errors?.[0]?.message || 'File not accepted')
+      }
+      return
+    }
+    if (accepted && accepted[0]) setFile(accepted[0])
+  }, [])
+
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
-    onDrop, accept: { 'application/pdf': ['.pdf'], 'text/plain': ['.txt'] },
-    maxFiles: 1, maxSize: 20 * 1024 * 1024,
+    onDrop,
+    accept: { 'application/pdf': ['.pdf'], 'text/plain': ['.txt'] },
+    maxFiles: 1,
+    maxSize: 20 * 1024 * 1024,
   })
 
   function addTag() {
