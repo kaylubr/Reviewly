@@ -17,8 +17,6 @@ import learnMoreIcon from '../assets/learn-more-icon.png'
 import learnMoreWhiteIcon from '../assets/learn-more-white-icon.png'
 import aboutUsImage from '../assets/about-us-image.png'
 
-import brenImage from '../assets/bren.png'
-
 const FEATURES = [
   {
     icon: Brain,
