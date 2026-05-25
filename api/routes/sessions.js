@@ -7,6 +7,7 @@ const router = express.Router()
 
 const XP_PER_CORRECT = { flashcard: 10, mcq: 15, speed: 20 }
 const LEVEL_XP_BASE = 100  // Level N requires N * 100 XP
+const DAILY_XP_CAP_SESSION = 5  // XP applies for up to 5 sessions per day
 
 function calcLevel(xp) {
   let level = 1
@@ -16,6 +17,22 @@ function calcLevel(xp) {
     level++
   }
   return { level, currentLevelXp: remaining, nextLevelXp: level * LEVEL_XP_BASE }
+}
+
+/**
+ * Calculate XP multiplier based on daily session count (diminishing returns through session 5)
+ * Session 1: 100% XP
+ * Session 2: 80% XP
+ * Session 3: 60% XP
+ * Session 4: 40% XP
+ * Session 5: 20% XP
+ * Session 6+: 0% XP
+ */
+function getXpMultiplier(sessionsCountToday) {
+  const multipliers = [1.0, 0.8, 0.6, 0.4, 0.2]
+  return sessionsCountToday >= 1 && sessionsCountToday <= DAILY_XP_CAP_SESSION
+    ? multipliers[sessionsCountToday - 1]
+    : 0
 }
 
 // POST /api/sessions/complete
@@ -35,10 +52,26 @@ router.post('/complete', requireAuth, async (req, res, next) => {
       ? Math.round((correct_answers / total_questions) * 100)
       : 0
 
+    // Get today's session count for session XP cap logic
+    const today = new Date().toISOString().split('T')[0]
+    const { data: todaysSessions } = await insforge.database
+      .from('sessions')
+      .select('id')
+      .eq('user_id', userId)
+      .gte('completed_at', `${today}T00:00:00`)
+      .lt('completed_at', `${today}T23:59:59`)
+
+    const sessionsCountToday = todaysSessions?.length || 0
+    const currentSessionNumber = sessionsCountToday + 1  // This session's number (1st, 2nd, 3rd, etc.)
+    const xpMultiplier = getXpMultiplier(currentSessionNumber)
+
     // Bonus XP for speed mode streaks / perfect scores
     let xpEarned = correct_answers * baseXp
     if (score === 100) xpEarned += 50  // perfect bonus
     if (mode === 'speed' && duration_seconds < 60) xpEarned += 25  // speed bonus
+
+    // Apply session XP cap multiplier
+    xpEarned = Math.floor(xpEarned * xpMultiplier)
 
     // Insert session record
     const { data: session, error: sErr } = await insforge.database
@@ -67,7 +100,6 @@ router.post('/complete', requireAuth, async (req, res, next) => {
 
     if (pErr) throw pErr
 
-    const today = new Date().toISOString().split('T')[0]
     const lastActive = profile?.last_active
     const isNewDay = lastActive !== today
     const isConsecutive = lastActive === getPreviousDay(today)
@@ -105,13 +137,30 @@ router.post('/complete', requireAuth, async (req, res, next) => {
       .eq('id', module_id)
       .eq('user_id', userId)
 
-    // Upsert daily_xp
-    await insforge.database
+    // Upsert daily_xp - track total XP and sessions per day
+    const { data: dailyXp } = await insforge.database
       .from('daily_xp')
-      .upsert([{ user_id: userId, date: today, xp_earned: xpEarned, sessions_count: 1 }], {
-        onConflict: 'user_id,date',
-        ignoreDuplicates: false
-      })
+      .select('xp_earned, sessions_count')
+      .eq('user_id', userId)
+      .eq('date', today)
+      .maybeSingle()
+
+    if (dailyXp) {
+      // Update existing daily record
+      await insforge.database
+        .from('daily_xp')
+        .update({
+          xp_earned: dailyXp.xp_earned + xpEarned,
+          sessions_count: dailyXp.sessions_count + 1
+        })
+        .eq('user_id', userId)
+        .eq('date', today)
+    } else {
+      // Insert new daily record
+      await insforge.database
+        .from('daily_xp')
+        .insert([{ user_id: userId, date: today, xp_earned: xpEarned, sessions_count: 1 }])
+    }
 
     // Check & award achievements
     const newAchievements = await checkAndAwardAchievements(userId, {
