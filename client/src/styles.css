@@ -400,6 +400,14 @@ img {
   transition: all 0.18s;
   box-shadow: 0 2px 12px rgba(170, 255, 0, 0.25);
 }
+
+.btn-primary.no-icon,
+.btn-secondary.no-icon,
+.btn-ghost.no-icon,
+.btn-danger.no-icon {
+  display: inline;
+}
+
 .btn-primary:hover {
   background: var(--lime-dark);
   box-shadow: var(--shadow-lime);
@@ -434,6 +442,9 @@ img {
 }
 
 .btn-ghost {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
   padding: 0.65rem 1.35rem;
   background: var(--bg-secondary);
   color: var(--text-secondary);
@@ -449,6 +460,9 @@ img {
 }
 
 .btn-danger {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
   padding: 0.65rem 1.35rem;
   background: var(--crimson-glass);
   color: var(--crimson);
@@ -2176,6 +2190,9 @@ img {
   align-items: center;
 }
 .regen-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
   white-space: nowrap;
 }
 .delete-btn {
@@ -3237,7 +3254,7 @@ img {
   gap: 1.5rem;
   padding: 1.75rem;
   background: white;
-  border: 1.5px solid var(--border);
+  box-shadow: 0 2px 16px rgba(0, 0, 0, 0.07);
   border-radius: var(--radius);
   margin-bottom: 1.5rem;
 }

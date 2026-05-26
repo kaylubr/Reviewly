@@ -115,7 +115,7 @@ export default function ModuleDetail() {
               <h2>Delete Module?</h2>
               <p>Are you sure you want to delete <strong>{module.title}</strong>? This cannot be undone and will remove all flashcards, questions, and sessions.</p>
               <div className="modal-actions">
-                <button className="btn-secondary" onClick={() => setDeleteConfirm(false)} disabled={deleting}>Cancel</button>
+                <button className="btn-secondary no-icon" onClick={() => setDeleteConfirm(false)} disabled={deleting}>Cancel</button>
                 <button className="btn-danger" onClick={handleDelete} disabled={deleting}>
                   {deleting ? <span className="spinner" /> : <Trash2 size={13} />}
                   {deleting ? 'Deleting...' : 'Delete'}

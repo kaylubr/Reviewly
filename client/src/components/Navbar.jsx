@@ -82,10 +82,10 @@ export default function Navbar() {
               <h2>Log out?</h2>
               <p>You'll need to sign back in to access your modules and progress.</p>
               <div className="modal-actions">
-                <button className="btn-ghost" onClick={() => setShowConfirm(false)}>
+                <button className="btn-ghost no-icon" onClick={() => setShowConfirm(false)}>
                   Cancel
                 </button>
-                <button className="btn-danger" onClick={handleLogout}>
+                <button className="btn-danger no-icon" onClick={handleLogout}>
                   Log out
                 </button>
               </div>
