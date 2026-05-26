@@ -2236,18 +2236,7 @@ img {
   align-items: center;
   justify-content: center;
 }
-.mode-emerald .mode-select-icon {
-  background: var(--lime);
-  color: var(--ink);
-}
-.mode-violet .mode-select-icon {
-  background: rgba(124, 58, 237, 0.12);
-  color: var(--violet);
-}
-.mode-amber .mode-select-icon {
-  background: rgba(245, 158, 11, 0.12);
-  color: var(--amber);
-}
+
 .mode-select-card h3 {
   font-family: var(--font-display);
   font-size: 1rem;

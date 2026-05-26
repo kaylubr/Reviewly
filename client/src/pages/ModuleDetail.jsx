@@ -1,16 +1,20 @@
 import { useState, useEffect } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
-import { ArrowLeft, Play, Zap, Brain, Target, Tag, RotateCcw, Sparkles, Trash2, BookOpen } from 'lucide-react'
+import { ArrowLeft, Play, Brain, Target, Tag, RotateCcw, Sparkles, Trash2 } from 'lucide-react'
 import { insforge } from '../lib/insforge'
 import { apiRequest } from '../lib/api'
 import { useAuth } from '../contexts/AuthContext'
 import toast from 'react-hot-toast'
 
+import lightning from "../assets/stat_card/Exp.svg"
+import studyTimeIcon from "../assets/stat_card/StudyTime.svg"
+import sessionIcon from "../assets/stat_card/Sessions.svg"
+
 const MODES = [
-  { id: 'flashcard', icon: BookOpen, title: 'Flashcard Mode', desc: 'Flip cards at your own pace. Mark what you know and what needs review.', color: 'emerald', xp: '10 XP / card' },
-  { id: 'mcq',       icon: Target,   title: 'Multiple Choice', desc: 'AI-crafted questions with instant feedback and difficulty scaling.', color: 'violet', xp: '15 XP / question' },
-  { id: 'speed',     icon: Zap,      title: 'Speed Round', desc: 'Race the clock. Combo multipliers and streak bonuses.', color: 'amber', xp: '20 XP / question' },
+  { id: 'flashcard', icon: lightning, title: 'Flashcard Mode', desc: 'Flip cards at your own pace. Mark what you know and what needs review.', color: 'emerald', xp: '10 XP / card' },
+  { id: 'mcq',       icon: sessionIcon,   title: 'Multiple Choice', desc: 'AI-crafted questions with instant feedback and difficulty scaling.', color: 'violet', xp: '15 XP / question' },
+  { id: 'speed',     icon: studyTimeIcon,      title: 'Speed Round', desc: 'Race the clock. Combo multipliers and streak bonuses.', color: 'amber', xp: '20 XP / question' },
 ]
 
 export default function ModuleDetail() {
@@ -146,7 +150,7 @@ export default function ModuleDetail() {
             onClick={() => navigate(`/review/${id}/${mode.id}`)}
           >
             <div className="mode-select-icon">
-              <mode.icon size={20} strokeWidth={2} />
+              <img src={mode.icon} alt={mode.icon} />
             </div>
             <h3>{mode.title}</h3>
             <p>{mode.desc}</p>
