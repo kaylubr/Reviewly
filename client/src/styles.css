@@ -152,22 +152,47 @@
   align-items: center;
   justify-content: space-between;
   padding: 0.7rem 1rem;
-  background: var(--ink);
+
+  background: var(--lime);
   border-radius: var(--radius-sm);
   text-decoration: none;
-  box-shadow: 0 4px 16px rgba(11, 11, 4, 0.18);
-  transition: box-shadow 0.18s;
+
+  position: relative;
+  overflow: hidden;
+
+  transition:
+    transform 0.25s ease,
+    background 0.25s ease;
+}
+
+.sidebar-level-pill::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    135deg,
+    transparent 20%,
+    rgba(255,255,255,0.18) 50%,
+    transparent 80%
+  );
+
+  transform: translateX(-100%);
+  transition: transform 0.5s ease;
 }
 
 .sidebar-level-pill:hover {
-  box-shadow: 0 6px 24px rgba(11, 11, 4, 0.28);
+  transform: scale(1.02);
+}
+
+.sidebar-level-pill:hover::before {
+  transform: translateX(100%);
 }
 
 .sidebar-level-label {
   font-family: var(--font-display);
   font-size: 0.72rem;
   font-weight: 600;
-  color: rgba(255, 255, 255, 0.5);
+  color: var(--ink);
   text-transform: uppercase;
   letter-spacing: 0.08em;
 }
@@ -176,7 +201,7 @@
   font-family: var(--font-display);
   font-size: 1rem;
   font-weight: 800;
-  color: var(--lime);
+  color: var(--ink);
 }
 
 /* Logout button */
@@ -321,12 +346,13 @@ img {
 }
 .main {
   min-height: 100vh;
+  overflow: auto;
 }
 
 .page {
   max-width: var(--max-width);
   margin: 0 auto;
-  padding: 2.5rem 1.5rem 5rem;
+  padding: 2.5rem 1.5rem 2.5rem;
 }
 .page h1 {
   font-family: var(--font-display);
@@ -567,7 +593,7 @@ img {
   gap: 1rem;
   padding: 1.1rem 1.25rem;
   background: var(--bg-card);
-  border: 1px solid var(--border);
+  box-shadow: 0 2px 12px rgba(0,0,0,0.07);
   border-radius: var(--radius);
   transition: all 0.2s;
 }
