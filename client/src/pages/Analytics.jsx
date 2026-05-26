@@ -3,12 +3,18 @@ import { motion } from 'framer-motion'
 import { useAuth } from '../contexts/AuthContext'
 import { apiRequest } from '../lib/api'
 import { insforge } from '../lib/insforge'
-import { calcLevel, formatDuration } from '../lib/utils'
+import { formatDuration } from '../lib/utils'
 import {
   BarChart, Bar, AreaChart, Area, XAxis, YAxis, Tooltip,
   ResponsiveContainer, Cell,
 } from 'recharts'
-import { BookOpen, Target, Zap, Clock, TrendingUp, Flame } from 'lucide-react'
+import { BookOpen, Target, TrendingUp } from 'lucide-react'
+import StatCard from '../components/StatCard'
+
+import expIcon from "../assets/stat_card/Exp.svg"
+import sessionIcon from "../assets/stat_card/Sessions.svg"
+import streakIcon from "../assets/stat_card/Streak.svg"
+import studyTimeIcon from "../assets/stat_card/StudyTime.svg"
 
 export default function Analytics() {
   const { user, profile, token } = useAuth()
@@ -52,11 +58,11 @@ export default function Analytics() {
       <p className="subtitle">Track your learning journey and growth over time.</p>
 
       <div className="stats-row">
-        <StatCard icon={<Zap size={18} />}      label="Total XP"    value={profile?.xp || 0}   color="violet" />
-        <StatCard icon={<Flame size={18} />}    label="Best Streak" value={profile?.streak || 0} suffix="days" color="amber" />
-        <StatCard icon={<Target size={18} />}   label="Avg Score"   value={`${avgScore}%`}      color="emerald" />
-        <StatCard icon={<Clock size={18} />}    label="Study Time"
-          value={`${Math.round((profile?.total_study_time_minutes || 0) / 60 * 10) / 10}h`} color="sky" />
+        <StatCard icon={<img src={expIcon} alt="xp" width={28} height={28} />} label="Total XP" value={profile?.xp || 0} />
+        <StatCard icon={<img src={streakIcon} alt="streak" width={28} height={28} />} label="Best Streak" value={profile?.streak || 0} suffix="days" />
+        <StatCard icon={<Target size={28} />} label="Avg Score" value={`${avgScore}%`} />
+        <StatCard icon={<img src={studyTimeIcon} alt="study time" width={28} height={28} />} label="Study Time"
+          value={`${Math.round((profile?.total_study_time_minutes || 0) / 60 * 10) / 10}h`} />
       </div>
 
       <div className="analytics-grid">
@@ -153,18 +159,6 @@ export default function Analytics() {
             ))}
           </div>
         )}
-      </div>
-    </div>
-  )
-}
-
-function StatCard({ icon, label, value, suffix, color }) {
-  return (
-    <div className={`stat-card stat-${color}`}>
-      <div className="stat-icon">{icon}</div>
-      <div>
-        <p className="stat-label">{label}</p>
-        <p className="stat-value">{value}{suffix ? <span className="stat-suffix"> {suffix}</span> : ''}</p>
       </div>
     </div>
   )

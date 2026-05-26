@@ -2,6 +2,8 @@ import { useState, useEffect, useRef } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Zap, Check, X } from 'lucide-react'
 
+import bgIcon from '../../assets/mcq/mcq-question-bg-icon.png'
+
 const ROUND_TIME = 60
 
 export default function SpeedMode({ questions, onComplete }) {
@@ -16,6 +18,7 @@ export default function SpeedMode({ questions, onComplete }) {
   const [done, setDone] = useState(false)
   const [feedback, setFeedback] = useState(null)
   const timerRef = useRef(null)
+  const doneRef = useRef(false)
 
   useEffect(() => {
     timerRef.current = setInterval(() => {
@@ -28,14 +31,14 @@ export default function SpeedMode({ questions, onComplete }) {
   }, [])
 
   function finishRound() {
-    if (!done) {
-      setDone(true)
-      onComplete({
-        correct_answers: correct,
-        total_questions: Math.max(index, 1),
-        duration_seconds: ROUND_TIME - timeLeft,
-      })
-    }
+    if (doneRef.current) return
+    doneRef.current = true
+    setDone(true)
+    onComplete({
+      correct_answers: correct,
+      total_questions: Math.max(index, 1),
+      duration_seconds: ROUND_TIME - timeLeft,
+    })
   }
 
   function handleSelect(i) {
@@ -68,84 +71,81 @@ export default function SpeedMode({ questions, onComplete }) {
 
   const q = questions[index]
   const timerPct = (timeLeft / ROUND_TIME) * 100
-  const timerStroke = timerPct > 50 ? 'var(--lime)' : timerPct > 25 ? 'var(--amber)' : 'var(--crimson)'
   const optionLetters = ['A', 'B', 'C', 'D']
 
+  function getOptionState(i) {
+    if (!answered) return 'idle'
+    if (i === q.correct_index) return 'correct'
+    if (i === selected) return 'wrong'
+    return 'dim'
+  }
+
   return (
-    <div className="speed-mode">
-      <div className="speed-hud">
-        <div className="speed-timer">
-          <svg viewBox="0 0 36 36" className="timer-svg">
-            <circle cx="18" cy="18" r="15.9" fill="none" stroke="var(--border)" strokeWidth="2.5" />
-            <circle
-              cx="18" cy="18" r="15.9" fill="none"
-              stroke={timerStroke} strokeWidth="2.5"
-              strokeDasharray={`${timerPct} 100`}
-              strokeLinecap="round"
-              transform="rotate(-90 18 18)"
-            />
-          </svg>
-          <span className="timer-text">{timeLeft}</span>
-        </div>
-
-        <div className="speed-stats">
-          <div className="speed-stat">
-            <Zap size={13} />
-            <span>{xpEarned} XP</span>
-          </div>
-          {combo > 1 && (
-            <motion.div
-              className="combo-badge"
-              key={combo}
-              initial={{ scale: 0.7 }}
-              animate={{ scale: [1, 1.15, 1] }}
-            >
-              x{combo} COMBO
-            </motion.div>
-          )}
-          {streak >= 3 && (
-            <div className="streak-badge">{streak} streak</div>
-          )}
-        </div>
-
-        <div className="speed-correct">{correct}/{questions.length}</div>
+    <div className="mcq-wrapper">
+      {/* Timer bar */}
+      <div className="speed-timer-bar">
+        <motion.div
+          className="speed-timer-fill"
+          animate={{ width: `${timerPct}%` }}
+          transition={{ duration: 1, ease: 'linear' }}
+        />
       </div>
 
+      {/* HUD */}
+      <p className="mcq-progress-text">
+        {timeLeft}s &nbsp;·&nbsp; {correct} correct &nbsp;·&nbsp; {xpEarned} XP
+        {combo > 1 && <span className="speed-combo-inline"> ×{combo} COMBO</span>}
+        {streak >= 3 && <span className="speed-streak-inline"> 🔥{streak}</span>}
+      </p>
+
+      {/* Question area */}
+      <div className="mcq-question-area">
+        <img src={bgIcon} className="mcq-question-bg-icon" alt="" aria-hidden="true" />
+        <AnimatePresence mode="wait">
+          <motion.p
+            key={`q-${index}`}
+            className="mcq-question"
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: 10 }}
+            transition={{ duration: 0.2 }}
+          >
+            {q?.question}
+          </motion.p>
+        </AnimatePresence>
+      </div>
+
+      {/* Options */}
       <AnimatePresence mode="wait">
         <motion.div
-          key={index}
-          className="speed-card"
-          initial={{ opacity: 0, scale: 0.97 }}
-          animate={{ opacity: 1, scale: 1 }}
-          exit={{ opacity: 0, scale: 0.97 }}
-          transition={{ duration: 0.15 }}
+          key={`opts-${index}`}
+          className="mcq-options"
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          exit={{ opacity: 0 }}
+          transition={{ duration: 0.2 }}
         >
-          <p className="speed-question">{q?.question}</p>
-          <div className="speed-options">
-            {(q?.options || []).map((opt, i) => {
-              let state = 'idle'
-              if (answered) {
-                if (i === q.correct_index) state = 'correct'
-                else if (i === selected) state = 'wrong'
-                else state = 'dim'
-              }
-              return (
-                <motion.button
-                  key={i}
-                  className={`speed-option option-${state}`}
-                  onClick={() => handleSelect(i)}
-                  whileHover={!answered ? { scale: 1.02 } : {}}
-                  whileTap={!answered ? { scale: 0.97 } : {}}
-                >
-                  <span className="option-letter">{optionLetters[i]}</span>
-                  {opt}
-                </motion.button>
-              )
-            })}
-          </div>
+          {(q?.options || []).map((opt, i) => {
+            const state = getOptionState(i)
+            return (
+              <motion.button
+                key={i}
+                className={`mcq-option option-${state}`}
+                onClick={() => handleSelect(i)}
+                whileHover={!answered ? { scale: 1.02 } : {}}
+                whileTap={!answered ? { scale: 0.97 } : {}}
+              >
+                <span className="option-letter">{optionLetters[i]}</span>
+                <span className="option-text">{opt}</span>
+                {answered && i === q.correct_index && <Check size={16} className="option-icon" strokeWidth={3} />}
+                {answered && i === selected && i !== q.correct_index && <X size={16} className="option-icon" strokeWidth={3} />}
+              </motion.button>
+            )
+          })}
         </motion.div>
       </AnimatePresence>
 
+      {/* Feedback toast */}
       <AnimatePresence>
         {feedback && (
           <motion.div
@@ -156,11 +156,7 @@ export default function SpeedMode({ questions, onComplete }) {
             transition={{ duration: 0.18 }}
           >
             {feedback.type === 'correct' ? (
-              <>
-                <Check size={22} />
-                +{feedback.xp} XP
-                {feedback.combo > 1 && <span className="combo-txt">×{feedback.combo}</span>}
-              </>
+              <><Check size={22} /> +{feedback.xp} XP {feedback.combo > 1 && <span className="combo-txt">×{feedback.combo}</span>}</>
             ) : (
               <X size={22} />
             )}

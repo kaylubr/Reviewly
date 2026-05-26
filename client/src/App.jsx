@@ -32,7 +32,7 @@ function AppLayout() {
   return (
     <div className="app">
       {user && !isPublic && !isReview && <Navbar />}
-      <main className={`main ${user && !isPublic && !isReview ? 'with-nav' : ''}`}>
+      <main className={`main ${user && !isPublic && !isReview ? 'with-sidebar' : ''}`}>
         <Routes>
           <Route path="/"                    element={!user ? <Landing />      : <Navigate to="/dashboard" />} />
           <Route path="/auth"                element={!user ? <Auth />          : <Navigate to="/dashboard" />} />
