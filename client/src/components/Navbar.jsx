@@ -1,4 +1,4 @@
-import { NavLink, useNavigate } from 'react-router-dom'
+import { NavLink } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import { LayoutDashboard, TreeDeciduous, BarChart2, User, LogOut } from 'lucide-react'
 import { useAuth } from '../contexts/AuthContext'
@@ -15,12 +15,11 @@ const NAV_ITEMS = [
 
 export default function Navbar() {
   const { profile, signOut } = useAuth()
-  const navigate = useNavigate()
   const lvlInfo = calcLevel(profile?.xp || 0)
 
   async function handleLogout() {
     await signOut()
-    navigate('/')
+    window.location.replace('/')
   }
 
   return (
