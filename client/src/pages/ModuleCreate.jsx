@@ -66,7 +66,8 @@ export default function ModuleCreate() {
           const path = `${user.id}/${Date.now()}.${ext}`
           const { data: storageData, error: storageErr } = await insforge.storage.from('modules').upload(path, file)
           if (storageErr) {
-            const message = storageErr.message || storageErr.error || 'Upload failed. Please try again.'
+            let message = storageErr.message || storageErr.error || 'Upload failed.'
+            if (message.includes('size required')) message = 'File size validation failed. Please check your file and try again.'
             throw new Error(message)
           }
           fileUrl = insforge.storage.from('modules').getPublicUrl(storageData?.key || path) || null
