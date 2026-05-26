@@ -140,14 +140,9 @@ export default function ModuleDetail() {
 
       <div className="review-modes">
         {MODES.map((mode, i) => (
-          <motion.div
+          <div
             key={mode.id}
             className={`mode-select-card mode-${mode.color}`}
-            initial={{ opacity: 0, y: 18 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: i * 0.08 }}
-            whileHover={{ y: -5, scale: 1.01 }}
-            onClick={() => navigate(`/review/${id}/${mode.id}`)}
           >
             <div className="mode-select-icon">
               <img src={mode.icon} alt={mode.icon} />
@@ -155,10 +150,10 @@ export default function ModuleDetail() {
             <h3>{mode.title}</h3>
             <p>{mode.desc}</p>
             <div className="mode-xp-badge">{mode.xp}</div>
-            <button className="btn-primary btn-sm mode-start-btn">
+            <button className="btn-primary btn-sm mode-start-btn" onClick={() => navigate(`/review/${id}/${mode.id}`)}>
               <Play size={13} /> Start
             </button>
-          </motion.div>
+          </div>
         ))}
       </div>
     </div>
