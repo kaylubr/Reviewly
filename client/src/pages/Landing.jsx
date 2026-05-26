@@ -2,8 +2,8 @@ import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import {
-  Sparkles, BookOpen, Zap, TreeDeciduous, ArrowRight,
-  Leaf, Brain, Target, Flame, Users,
+  Sparkles, BookOpen, Zap, TreeDeciduous, 
+  ArrowRight, Brain, Target,
 } from 'lucide-react'
 
 import heroImage from '../assets/hero-image.png'
@@ -16,8 +16,6 @@ import startnowImage from '../assets/startnow-image.png'
 import learnMoreIcon from '../assets/learn-more-icon.png'
 import learnMoreWhiteIcon from '../assets/learn-more-white-icon.png'
 import aboutUsImage from '../assets/about-us-image.png'
-
-import brenImage from '../assets/bren.png'
 
 const FEATURES = [
   {
@@ -82,12 +80,12 @@ const MODES = [
 ]
 
 const TEAM = [
-  { name: 'Cajigal, Vincent James', role: 'Lead Developer', desc: 'Architected the core review engine and built the full-stack infrastructure that powers Reviewly.', linkedin: '#', color: '#0B0B04' },
-  { name: 'Corpus, Daniel Louis', role: 'Frontend Developer', desc: 'Designed and built the user interface, making sure every interaction feels smooth and intuitive.', linkedin: '#', color: '#1a1a2e' },
+  { name: 'Cajigal, Vincent James', role: 'Backend Developer', desc: 'Architected the core review engine and built the full-stack infrastructure that powers Reviewly.', linkedin: '#', color: '#0B0B04' },
+  { name: 'Corpus, Daniel Louis', role: 'UI/UX Designer', desc: 'Designed and built the user interface, making sure every interaction feels smooth and intuitive.', linkedin: '#', color: '#1a1a2e' },
   { name: 'Punzalan, Bren Carl', role: 'Backend Developer', desc: 'Handles the AI integration and data pipeline that turns uploaded notes into smart review sessions.', linkedin: '#', color: '#10253F' },
-  { name: 'Reyes, Kyle Benedict', role: 'UI/UX Designer', desc: 'Crafted the visual identity and user experience from the ground up, keeping things clean and focused.', linkedin: 'https://www.linkedin.com/in/kylebreyes/', color: '#2d1b69' },
-  { name: 'Roxas, Joseph', role: 'Product Manager', desc: 'Keeps the team aligned and makes sure Reviewly solves real problems that students actually face.', linkedin: '#', color: '#0B0B04' },
-];
+  { name: 'Reyes, Kyle Benedict', role: 'Frontend Developer/Backend Developer', desc: 'Crafted the visual identity and user experience from the ground up, keeping things clean and focused.', linkedin: 'https://www.linkedin.com/in/kylebreyes/', color: '#2d1b69' },
+  { name: 'Roxas, Joseph', role: 'Frontend Developer', desc: 'Keeps the team aligned and makes sure Reviewly solves real problems that students actually face.', linkedin: '#', color: '#0B0B04' },
+]
 
 export default function Landing() {
   const navigate = useNavigate()

@@ -6,14 +6,17 @@ import { insforge } from '../lib/insforge'
 import { useAuth } from '../contexts/AuthContext'
 import toast from 'react-hot-toast'
 
+import reviewlyLogo from '../assets/reviewly-logo.png'
+
 export default function Auth() {
   const [searchParams] = useSearchParams()
-  const [mode, setMode] = useState(searchParams.get('mode') === 'signin' ? 'signin' : 'signup')
+  const [mode, setMode] = useState(searchParams.get('mode') === 'signup' ? 'signup' : 'signin')
   const [step, setStep] = useState('form')
   const [form, setForm] = useState({ name: '', email: '', password: '' })
   const [showPass, setShowPass] = useState(false)
   const [loading, setLoading] = useState(false)
   const [otp, setOtp] = useState('')
+  const [oauthLoading, setOauthLoading] = useState(null)
   const { user, handleAuthSuccess } = useAuth()
   const navigate = useNavigate()
 
@@ -48,6 +51,10 @@ export default function Auth() {
         })
         if (error) {
           if (error.statusCode === 403) { setStep('verify'); toast('Please verify your email first.') }
+          else if (error.statusCode === 401 || error.message?.toLowerCase().includes('not found')) {
+            toast.error("You don't have an account yet. Please sign up first.")
+            setMode('signup')
+          }
           else throw error
         } else {
           await handleAuthSuccess(data.user, data.accessToken)
@@ -79,11 +86,20 @@ export default function Auth() {
   }
 
   async function handleOAuth(provider) {
+    setOauthLoading(provider)
     const { error } = await insforge.auth.signInWithOAuth({
       provider, redirectTo: `${window.location.origin}/dashboard`,
     })
-    if (error) toast.error(error.message)
-  }
+    if (error) {
+      if (error.statusCode === 401 || error.message?.toLowerCase().includes('not found')) {
+        toast.error("You don't have an account yet. Please sign up first.")
+        setMode('signup')
+      } else {
+        toast.error(error.message)
+      }
+      setOauthLoading(null)
+    }
+}
 
   return (
     <div className="auth-page">
@@ -98,7 +114,9 @@ export default function Auth() {
         </button>
 
         <div className="auth-logo">
-          <div className="auth-logo-icon"><Leaf size={18} strokeWidth={2.5} /></div>
+          <div className="auth-logo-icon">
+            <img src={reviewlyLogo} alt="Logo" />
+          </div>
           <h1>Reviewly</h1>
         </div>
 
@@ -118,11 +136,23 @@ export default function Auth() {
               </p>
 
               <div className="oauth-buttons">
-                <button className="oauth-btn" onClick={() => handleOAuth('google')}>
-                  <img src="https://www.google.com/favicon.ico" width={15} height={15} alt="" />
+                <button
+                  className="oauth-btn"
+                  onClick={() => handleOAuth('google')}
+                  disabled={!!oauthLoading}
+                >
+                  {oauthLoading === 'google'
+                    ? <span className="spinner" />
+                    : <img src="https://www.google.com/favicon.ico" width={15} height={15} alt="" />}
                   Continue with Google
                 </button>
-                <button className="oauth-btn" onClick={() => handleOAuth('github')}>
+
+                <button
+                  className="oauth-btn"
+                  onClick={() => handleOAuth('github')}
+                  disabled={!!oauthLoading}
+                >
+                  {oauthLoading === 'github' ? <span className="spinner" /> : null}
                   Continue with GitHub
                 </button>
               </div>
