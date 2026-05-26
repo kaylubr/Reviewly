@@ -2443,7 +2443,6 @@ img {
 }
 .btn-need-review {
   background: var(--crimson-glass);
-  border: 1.5px solid var(--crimson);
   color: var(--crimson);
 }
 .btn-need-review:hover {
