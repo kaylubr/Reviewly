@@ -4,9 +4,6 @@ import { motion } from "framer-motion"
 import {
   Plus,
   BookOpen,
-  Zap,
-  Flame,
-  Clock,
   TrendingUp,
   ChevronRight,
   TreeDeciduous,

@@ -3,12 +3,12 @@ import { motion } from 'framer-motion'
 import { useAuth } from '../contexts/AuthContext'
 import { apiRequest } from '../lib/api'
 import { insforge } from '../lib/insforge'
-import { calcLevel, formatDuration } from '../lib/utils'
+import { formatDuration } from '../lib/utils'
 import {
   BarChart, Bar, AreaChart, Area, XAxis, YAxis, Tooltip,
   ResponsiveContainer, Cell,
 } from 'recharts'
-import { BookOpen, Target, Zap, Clock, TrendingUp, Flame } from 'lucide-react'
+import { BookOpen, Target, TrendingUp } from 'lucide-react'
 import StatCard from '../components/StatCard'
 
 import expIcon from "../assets/stat_card/Exp.svg"

@@ -2,8 +2,8 @@ import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import {
-  Sparkles, BookOpen, Zap, TreeDeciduous, ArrowRight,
-  Leaf, Brain, Target, Flame, Users,
+  Sparkles, BookOpen, Zap, TreeDeciduous, 
+  ArrowRight, Brain, Target,
 } from 'lucide-react'
 
 import heroImage from '../assets/hero-image.png'
