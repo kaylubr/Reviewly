@@ -10,7 +10,7 @@ import reviewlyLogo from '../assets/reviewly-logo.png'
 
 export default function Auth() {
   const [searchParams] = useSearchParams()
-  const [mode, setMode] = useState(searchParams.get('mode') === 'signin' ? 'signin' : 'signup')
+  const [mode, setMode] = useState(searchParams.get('mode') === 'signup' ? 'signup' : 'signin')
   const [step, setStep] = useState('form')
   const [form, setForm] = useState({ name: '', email: '', password: '' })
   const [showPass, setShowPass] = useState(false)
@@ -51,6 +51,10 @@ export default function Auth() {
         })
         if (error) {
           if (error.statusCode === 403) { setStep('verify'); toast('Please verify your email first.') }
+          else if (error.statusCode === 401 || error.message?.toLowerCase().includes('not found')) {
+            toast.error("You don't have an account yet. Please sign up first.")
+            setMode('signup')
+          }
           else throw error
         } else {
           await handleAuthSuccess(data.user, data.accessToken)
@@ -87,7 +91,12 @@ export default function Auth() {
       provider, redirectTo: `${window.location.origin}/dashboard`,
     })
     if (error) {
-      toast.error(error.message)
+      if (error.statusCode === 401 || error.message?.toLowerCase().includes('not found')) {
+        toast.error("You don't have an account yet. Please sign up first.")
+        setMode('signup')
+      } else {
+        toast.error(error.message)
+      }
       setOauthLoading(null)
     }
 }

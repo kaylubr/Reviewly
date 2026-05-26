@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { motion } from 'framer-motion'
+import { useNavigate } from 'react-router-dom'
 import { useAuth } from '../contexts/AuthContext'
 import { insforge } from '../lib/insforge'
 import { calcLevel, getTreeStage } from '../lib/utils'
@@ -8,6 +9,7 @@ import XPBar from '../components/XPBar'
 import toast from 'react-hot-toast'
 
 export default function Profile() {
+  const navigate = useNavigate()
   const { user, profile, signOut, refreshProfile } = useAuth()
   const [editing, setEditing] = useState(false)
   const [username, setUsername] = useState(profile?.username || '')
@@ -108,7 +110,10 @@ export default function Profile() {
         className="btn-danger"
         style={{ marginTop: '0.5rem' }}
         whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}
-        onClick={signOut}
+        onClick={async () => {
+          await signOut()
+          window.location.replace('/')
+        }}
       >
         <LogOut size={15} /> Sign Out
       </motion.button>
