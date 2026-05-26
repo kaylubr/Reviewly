@@ -41,12 +41,9 @@ export default function SessionComplete({ result, mode, onPlayAgain, onDashboard
       animate={{ opacity: 1, scale: 1 }}
       transition={{ duration: 0.45, type: 'spring' }}
     >
-      <motion.div
-        animate={{ y: [0, -10, 0] }}
-        transition={{ repeat: Infinity, duration: 3, ease: 'easeInOut' }}
-      >
+      <div>
         <TrophyIcon score={score} />
-      </motion.div>
+      </div>
 
       <h1 className="complete-title">
         {score >= 90 ? 'Outstanding!' : score >= 70 ? 'Great work!' : 'Keep going!'}
