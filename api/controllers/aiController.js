@@ -25,7 +25,7 @@ async function generateFlashcards(content, fileUrl = null) {
 
   try {
     const completion = await client.ai.chat.completions.create({
-      model: AI_MODEL, messages, temperature: 0.7, maxTokens: 4000,
+      model: AI_MODEL, messages, temperature: 0.7,
       ...(fileUrl ? { fileParser: { enabled: true } } : {})
     })
     const raw = completion?.choices?.[0]?.message?.content
@@ -39,7 +39,7 @@ async function generateFlashcards(content, fileUrl = null) {
         const fallback = await client.ai.chat.completions.create({
           model: AI_MODEL,
           messages: [{ role: 'user', content: buildFlashcardPrompt(content) }],
-          temperature: 0.7, maxTokens: 4000
+          temperature: 0.7
         })
         const raw = fallback?.choices?.[0]?.message?.content
         if (!raw) throw new Error('AI returned empty flashcard response')
@@ -66,7 +66,7 @@ async function generateMCQ(content, fileUrl = null, count = 10) {
 
   try {
     const completion = await client.ai.chat.completions.create({
-      model: AI_MODEL, messages, temperature: 0.7, maxTokens: 6000,
+      model: AI_MODEL, messages, temperature: 0.7,
       ...(fileUrl ? { fileParser: { enabled: true } } : {})
     })
     const raw = completion?.choices?.[0]?.message?.content
@@ -79,7 +79,7 @@ async function generateMCQ(content, fileUrl = null, count = 10) {
         const fallback = await client.ai.chat.completions.create({
           model: AI_MODEL,
           messages: [{ role: 'user', content: buildMCQPrompt(content, count) }],
-          temperature: 0.7, maxTokens: 6000
+          temperature: 0.7
         })
         const raw = fallback?.choices?.[0]?.message?.content
         if (!raw) throw new Error('AI returned empty MCQ response')
@@ -106,7 +106,7 @@ async function summarizeContent(content, fileUrl = null) {
 
   try {
     const completion = await client.ai.chat.completions.create({
-      model: AI_MODEL, messages, temperature: 0.5, maxTokens: 500,
+      model: AI_MODEL, messages, temperature: 0.5,
       ...(fileUrl ? { fileParser: { enabled: true } } : {})
     })
     return completion?.choices?.[0]?.message?.content || ''
@@ -117,7 +117,7 @@ async function summarizeContent(content, fileUrl = null) {
         const fallback = await client.ai.chat.completions.create({
           model: AI_MODEL,
           messages: [{ role: 'user', content: `Summarize in 2-3 sentences:\n\n${content}` }],
-          temperature: 0.5, maxTokens: 500
+          temperature: 0.5
         })
         return fallback?.choices?.[0]?.message?.content || ''
       } catch { return '' }
