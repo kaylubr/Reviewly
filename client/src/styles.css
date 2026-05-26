@@ -434,30 +434,23 @@ img {
 }
 
 .btn-ghost {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.45rem;
   padding: 0.65rem 1.35rem;
   background: var(--bg-secondary);
-  border: 1px solid var(--border);
   color: var(--text-secondary);
   font-weight: 500;
   font-size: 0.875rem;
   border-radius: var(--radius-sm);
   transition: all 0.18s;
 }
+
 .btn-ghost:hover {
   background: var(--border);
   color: var(--text);
 }
 
 .btn-danger {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.45rem;
   padding: 0.65rem 1.35rem;
   background: var(--crimson-glass);
-  border: 1.5px solid var(--crimson);
   color: var(--crimson);
   font-weight: 600;
   font-size: 0.875rem;

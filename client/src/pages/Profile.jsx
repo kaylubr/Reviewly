@@ -10,7 +10,7 @@ import toast from 'react-hot-toast'
 
 export default function Profile() {
   const navigate = useNavigate()
-  const { user, profile, signOut, refreshProfile } = useAuth()
+  const { user, profile, refreshProfile } = useAuth()
   const [editing, setEditing] = useState(false)
   const [username, setUsername] = useState(profile?.username || '')
   const [saving, setSaving] = useState(false)
@@ -104,19 +104,6 @@ export default function Profile() {
         <User size={13} />
         Member since {new Date(profile?.created_at || Date.now()).toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}
       </div>
-
-      {/* Sign out */}
-      <motion.button
-        className="btn-danger"
-        style={{ marginTop: '0.5rem' }}
-        whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}
-        onClick={async () => {
-          await signOut()
-          window.location.replace('/')
-        }}
-      >
-        <LogOut size={15} /> Sign Out
-      </motion.button>
     </div>
   )
 }
