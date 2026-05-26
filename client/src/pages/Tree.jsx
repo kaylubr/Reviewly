@@ -3,15 +3,47 @@ import { motion } from 'framer-motion'
 import { useAuth } from '../contexts/AuthContext'
 import { apiRequest } from '../lib/api'
 import { calcLevel } from '../lib/utils'
-import { TreeDeciduous, Sprout, TreePine, Flower2, Star, Lock, Check } from 'lucide-react'
+import { Star, Lock, Check } from 'lucide-react'
 import XPBar from '../components/XPBar'
+import {
+  TreeStage1,
+  TreeStage2,
+  TreeStage3,
+  TreeStage4,
+  TreeStage5,
+} from '../components/TreeIllustrations'
 
 const TREE_STAGES = [
-  { level: [1, 4],  icon: Sprout,       name: 'Tiny Sapling',       desc: 'Your journey begins. A small seed of knowledge taking root.' },
-  { level: [5, 9],  icon: TreePine,      name: 'Young Tree',          desc: 'Roots strengthening. A curious young tree reaching for light.' },
-  { level: [10, 14], icon: TreeDeciduous, name: 'Leafy Tree',         desc: 'Full of leaves, standing proud. Knowledge flowing through every branch.' },
-  { level: [15, 19], icon: Flower2,       name: 'Blooming Tree',      desc: 'Flowers bloom — a sign of mastery. Others look up in wonder.' },
-  { level: [20, Infinity], icon: Star,   name: 'Mystical Ancient Tree', desc: 'A force of nature. Wisdom radiates — you are the forest.' },
+  {
+    level: [1, 4],
+    Component: TreeStage1,
+    name: 'Tiny Sapling',
+    desc: 'Your journey begins. A small seed of knowledge taking root.',
+  },
+  {
+    level: [5, 9],
+    Component: TreeStage2,
+    name: 'Young Tree',
+    desc: 'Roots strengthening. A curious young tree reaching for light.',
+  },
+  {
+    level: [10, 14],
+    Component: TreeStage3,
+    name: 'Leafy Tree',
+    desc: 'Full of leaves, standing proud. Knowledge flowing through every branch.',
+  },
+  {
+    level: [15, 19],
+    Component: TreeStage4,
+    name: 'Blooming Tree',
+    desc: 'Flowers bloom — a sign of mastery. Others look up in wonder.',
+  },
+  {
+    level: [20, Infinity],
+    Component: TreeStage5,
+    name: 'Mystical Ancient Tree',
+    desc: 'A force of nature. Wisdom radiates — you are the forest.',
+  },
 ]
 
 function getStage(level) {
@@ -63,10 +95,10 @@ export default function Tree() {
         <motion.div
           className="main-tree"
           animate={{ y: [0, -10, 0] }}
-          transition={{ repeat: Infinity, duration: 4, ease: 'easeInOut' }}
+          transition={{ repeat: Infinity, duration: 4.5, ease: 'easeInOut' }}
         >
           <div className="tree-main-icon">
-            <stage.icon size={56} strokeWidth={1.4} />
+            <stage.Component width={220} height={220} />
           </div>
         </motion.div>
 
@@ -106,7 +138,7 @@ export default function Tree() {
         <div className="evolution-timeline">
           {TREE_STAGES.map((s, i) => {
             const unlocked = lvlInfo.level >= s.level[0]
-            const current  = lvlInfo.level >= s.level[0] && lvlInfo.level <= s.level[1]
+            const current = lvlInfo.level >= s.level[0] && lvlInfo.level <= s.level[1]
             return (
               <motion.div
                 key={i}
@@ -116,7 +148,7 @@ export default function Tree() {
                 {current && <span className="evo-current-badge">Current</span>}
                 <div className="evo-icon">
                   {unlocked
-                    ? <s.icon size={22} strokeWidth={1.8} />
+                    ? <s.Component width={36} height={36} />
                     : <Lock size={18} strokeWidth={1.8} />}
                 </div>
                 <p className="evo-name">{s.name}</p>

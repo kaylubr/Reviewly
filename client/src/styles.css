@@ -2895,17 +2895,25 @@ img {
   z-index: 2;
 }
 .tree-main-icon {
-  width: 130px;
-  height: 130px;
-  border-radius: 50%;
-  background: var(--lime);
   display: flex;
   align-items: center;
   justify-content: center;
-  color: var(--ink);
   position: relative;
   z-index: 2;
+  padding: 0.25rem;
+  background: transparent;
+  border-radius: 0;
 }
+
+.tree-main-icon svg {
+  display: block;
+  width: 220px;
+  height: 220px;
+  max-width: 78vw;
+  max-height: 78vw;
+  filter: drop-shadow(0 14px 24px rgba(170, 255, 0, 0.28));
+}
+
 .tree-environment {
   position: absolute;
   bottom: 1.5rem;

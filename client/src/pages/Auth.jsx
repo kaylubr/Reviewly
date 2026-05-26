@@ -50,12 +50,17 @@ export default function Auth() {
           email: form.email, password: form.password,
         })
         if (error) {
-          if (error.statusCode === 403) { setStep('verify'); toast('Please verify your email first.') }
-          else if (error.statusCode === 401 || error.message?.toLowerCase().includes('not found')) {
+          if (error.statusCode === 403) {
+            setStep('verify')
+            toast('Please verify your email first.')
+          } else if (error.statusCode === 404 || error.message?.toLowerCase().includes('not found')) {
             toast.error("You don't have an account yet. Please sign up first.")
             setMode('signup')
+          } else if (error.statusCode === 401) {
+            toast.error('Incorrect email or password.')
+          } else {
+            throw error
           }
-          else throw error
         } else {
           await handleAuthSuccess(data.user, data.accessToken)
           toast.success('Welcome back!')
@@ -91,7 +96,7 @@ export default function Auth() {
       provider, redirectTo: `${window.location.origin}/dashboard`,
     })
     if (error) {
-      if (error.statusCode === 401 || error.message?.toLowerCase().includes('not found')) {
+      if (error.statusCode === 404 || error.message?.toLowerCase().includes('not found')) {
         toast.error("You don't have an account yet. Please sign up first.")
         setMode('signup')
       } else {
