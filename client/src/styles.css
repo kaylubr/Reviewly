@@ -1,63 +1,59 @@
 /* ============================================================
-   Reviewly — Design System
-   Light theme · Lime green accent · Bold geometric type
-   ============================================================ */
+  Reviewly — Design System
+  Light theme · Lime green accent · Bold geometric type
+  ============================================================ */
 
-@import url("https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,600;12..96,700;12..96,800&family=DM+Sans:wght@400;500;600&display=swap");
+@import url('https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,600;12..96,700;12..96,800&family=DM+Sans:wght@400;500;600&display=swap');
 
 :root {
   /* ── Brand Colors ─────────────────────────── */
-  --lime: #b9ff66;
-  --lime-dark: #88cc00;
-  --lime-muted: #d6ff80;
-  --lime-glass: rgba(170, 255, 0, 0.12);
-  --crimson: #e84848;
-  --crimson-glass: rgba(232, 72, 72, 0.1);
-  --navy: #10253f;
-  --ink: #0b0b04;
-  --amber: #f59e0b;
-  --violet: #7c3aed;
-  --sky: #0ea5e9;
+  --lime:        #AAFF00;
+  --lime-dark:   #88CC00;
+  --lime-muted:  #D6FF80;
+  --lime-glass:  rgba(170,255,0,0.12);
+  --crimson:     #E84848;
+  --crimson-glass: rgba(232,72,72,0.10);
+  --navy:        #10253F;
+  --ink:         #0B0B04;
+  --amber:       #F59E0B;
+  --violet:      #7C3AED;
+  --sky:         #0EA5E9;
 
   /* ── Surface ──────────────────────────────── */
-  --bg: #ffffff;
-  --bg-secondary: #f5f5f3;
-  --bg-card: #ffffff;
-  --bg-dark: #0b0b04;
-  --bg-dark2: #111109;
+  --bg:          #FFFFFF;
+  --bg-secondary:#F5F5F3;
+  --bg-card:     #FFFFFF;
+  --bg-dark:     #0B0B04;
+  --bg-dark2:    #111109;
 
   /* ── Type ─────────────────────────────────── */
-  --text: #0b0b04;
+  --text:        #0B0B04;
   --text-secondary: #444444;
-  --text-muted: #888888;
-  --text-inverse: #ffffff;
+  --text-muted:  #888888;
+  --text-inverse:#FFFFFF;
 
   /* ── Border ───────────────────────────────── */
-  --border: #e0e0dc;
-  --border-dark: rgba(255, 255, 255, 0.1);
+  --border:      #E0E0DC;
+  --border-dark: rgba(255,255,255,0.10);
 
   /* ── Spacing & Radii ──────────────────────── */
   --navbar-height: 64px;
-  --max-width: 1200px;
-  --radius-xs: 6px;
-  --radius-sm: 10px;
-  --radius: 16px;
-  --radius-lg: 24px;
-  --radius-xl: 32px;
+  --max-width:   1200px;
+  --radius-xs:   6px;
+  --radius-sm:   10px;
+  --radius:      16px;
+  --radius-lg:   24px;
+  --radius-xl:   32px;
 
   /* ── Shadow ───────────────────────────────── */
-  --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.06);
-  --shadow-md: 0 8px 32px rgba(0, 0, 0, 0.1);
-  --shadow-lg: 0 24px 64px rgba(0, 0, 0, 0.14);
-  --shadow-lime: 0 4px 24px rgba(170, 255, 0, 0.3);
+  --shadow-sm:   0 2px 8px rgba(0,0,0,0.06);
+  --shadow-md:   0 8px 32px rgba(0,0,0,0.10);
+  --shadow-lg:   0 24px 64px rgba(0,0,0,0.14);
+  --shadow-lime: 0 4px 24px rgba(170,255,0,0.30);
 
   /* ── Typography ───────────────────────────── */
-  --font-display: "Bricolage Grotesque", sans-serif;
-  --font-body: "DM Sans", sans-serif;
-
-  --button-color: #191a23;
-
-  /* Sidebar */
+  --font-display: 'Bricolage Grotesque', sans-serif;
+  --font-body:    'DM Sans', sans-serif;
   --sidebar-width: 220px;
 }
 
