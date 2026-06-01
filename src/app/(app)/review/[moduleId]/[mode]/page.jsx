@@ -25,6 +25,7 @@ export default function Review() {
   const [loading, setLoading] = useState(true)
   const [sessionState, setSessionState] = useState('playing')
   const [result, setResult] = useState(null)
+  const [showExitConfirm, setShowExitConfirm] = useState(false)
 
   useEffect(() => { if (token) loadQuestions() }, [moduleId, mode, token])
 
@@ -79,10 +80,24 @@ export default function Review() {
       {sessionState === 'playing' && (
         <>
           <div className="review-topbar">
-            <button className="review-exit-btn" onClick={() => router.push(`/modules/${moduleId}`)}><X size={17} /></button>
+            <button className="review-exit-btn" onClick={() => setShowExitConfirm(true)}><X size={17} /></button>
             <span className="mode-label">{MODE_LABELS[mode] || mode}</span>
             <div style={{ width: 36 }} />
           </div>
+          <AnimatePresence>
+            {showExitConfirm && (
+              <motion.div className="modal-overlay" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={() => setShowExitConfirm(false)}>
+                <motion.div className="modal-dialog" initial={{ opacity: 0, scale: 0.95, y: 10 }} animate={{ opacity: 1, scale: 1, y: 0 }} exit={{ opacity: 0, scale: 0.95 }} onClick={e => e.stopPropagation()}>
+                  <h2>Leave review session?</h2>
+                  <p>If you exit now, your current progress will not be saved.</p>
+                  <div className="modal-actions">
+                    <button className="btn-secondary no-icon" onClick={() => setShowExitConfirm(false)}>Cancel</button>
+                    <button className="btn-danger no-icon" onClick={() => { setShowExitConfirm(false); router.push(`/modules/${moduleId}`) }}>Exit anyway</button>
+                  </div>
+                </motion.div>
+              </motion.div>
+            )}
+          </AnimatePresence>
           <AnimatePresence mode="wait">
             {mode === 'flashcard' && questions.length > 0 && <FlashcardMode key="flash" questions={questions} onComplete={handleComplete} />}
             {mode === 'mcq' && questions.length > 0 && <MCQMode key="mcq" questions={questions} onComplete={handleComplete} />}

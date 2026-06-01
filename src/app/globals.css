@@ -2067,6 +2067,10 @@ img {
   padding-top: 1rem;
 }
 
+.tree-summary-card .card-footer:hover {
+  color: var(--text-muted);
+}
+
 .tree-summary-card .xpbar-track {
   background: rgba(170, 255, 0, 0.1);
   border-color: rgba(170, 255, 0, 0.2);
