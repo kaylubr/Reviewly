@@ -3,7 +3,7 @@ import { useState } from 'react'
 import Link from 'next/link'
 import { usePathname, useRouter } from 'next/navigation'
 import { motion, AnimatePresence } from 'framer-motion'
-import { LayoutDashboard, TreeDeciduous, BarChart2, User, LogOut } from 'lucide-react'
+import { LayoutDashboard, TreeDeciduous, BarChart2, User, LogOut, ChevronsLeft, ChevronsRight } from 'lucide-react'
 import { useAuth } from '@/contexts/AuthContext'
 import { calcLevel } from '@/lib/utils'
 
@@ -14,7 +14,7 @@ const NAV_ITEMS = [
   { to: '/profile',   icon: User,             label: 'Profile' },
 ]
 
-export default function Navbar() {
+export default function Navbar({ collapsed, onToggleCollapse }) {
   const { profile, signOut } = useAuth()
   const lvlInfo = calcLevel(profile?.xp || 0)
   const [showConfirm, setShowConfirm] = useState(false)
@@ -33,6 +33,9 @@ export default function Navbar() {
           <img src="/assets/reviewly-logo.png" alt="Reviewly" className="sidebar-logo-img" />
           <span className="sidebar-logo-text">Reviewly</span>
         </Link>
+        <button type="button" className="sidebar-collapse-btn" onClick={onToggleCollapse}>
+          {collapsed ? <ChevronsRight size={18} strokeWidth={3} /> : <ChevronsLeft size={18} strokeWidth={3} />}
+        </button>
 
         <div className="sidebar-links">
           {NAV_ITEMS.map(item => (

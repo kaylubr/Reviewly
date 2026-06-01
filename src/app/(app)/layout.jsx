@@ -1,5 +1,5 @@
 'use client'
-import { useEffect } from 'react'
+import { useState, useEffect } from 'react'
 import { usePathname, useRouter } from 'next/navigation'
 import { useAuth } from '@/contexts/AuthContext'
 import Navbar from '@/components/Navbar'
@@ -8,6 +8,7 @@ export default function AppLayout({ children }) {
   const { user, loading } = useAuth()
   const pathname = usePathname()
   const router = useRouter()
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(false)
 
   useEffect(() => {
     if (!loading && !user) {
@@ -28,10 +29,16 @@ export default function AppLayout({ children }) {
   // Completely hide sidebar on review pages
   const isReviewPage = pathname?.includes('/review/')
   const hideSidebar = isReviewPage
+  const collapsedSidebar = sidebarCollapsed && !isReviewPage
 
   return (
-    <div className={`app-layout ${hideSidebar ? 'sidebar-hidden' : ''}`}>
-      {!isReviewPage && <Navbar />}
+    <div className={`app-layout ${hideSidebar ? 'sidebar-hidden' : ''} ${collapsedSidebar ? 'sidebar-collapsed' : ''}`}>
+      {!isReviewPage && (
+        <Navbar
+          collapsed={sidebarCollapsed}
+          onToggleCollapse={() => setSidebarCollapsed(prev => !prev)}
+        />
+      )}
       <main className="main-content">{children}</main>
     </div>
   )
