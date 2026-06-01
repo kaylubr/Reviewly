@@ -1,8 +1,39 @@
+'use client'
 import { createContext, useContext, useState, useEffect, useRef } from 'react'
-import { insforge } from '../lib/insforge'
-import { apiRequest } from '../lib/api'
+import { getInsforgeClient } from '@/lib/insforge'
+import { apiRequest } from '@/lib/api'
 
 const AuthContext = createContext(null)
+const AUTH_STORAGE_KEY = 'reviewly_auth_session'
+
+function savePersistedSession(session) {
+  if (typeof window === 'undefined') return
+  try {
+    window.localStorage.setItem(AUTH_STORAGE_KEY, JSON.stringify(session))
+  } catch {
+    // Ignore if storage is unavailable
+  }
+}
+
+function clearPersistedSession() {
+  if (typeof window === 'undefined') return
+  try {
+    window.localStorage.removeItem(AUTH_STORAGE_KEY)
+  } catch {
+    // Ignore if storage is unavailable
+  }
+}
+
+function getPersistedSession() {
+  if (typeof window === 'undefined') return null
+  try {
+    const raw = window.localStorage.getItem(AUTH_STORAGE_KEY)
+    if (!raw) return null
+    return JSON.parse(raw)
+  } catch {
+    return null
+  }
+}
 
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(null)
@@ -12,40 +43,34 @@ export function AuthProvider({ children }) {
   const hydrated = useRef(false)
 
   useEffect(() => {
-    // Guard against React Strict Mode double-invocation
     if (hydrated.current) return
     hydrated.current = true
 
     async function hydrateAuth() {
-      // If landing from an OAuth redirect, the URL contains ?insforge_code=...
-      // We must exchange it explicitly before calling getCurrentUser.
+      const insforge = getInsforgeClient()
       const urlParams = new URLSearchParams(window.location.search)
       const oauthCode = urlParams.get('insforge_code')
 
       if (oauthCode) {
-        // Remove the code from the URL immediately to prevent re-use on refresh
-        window.history.replaceState({}, '', window.location.pathname)
-        try {
-          const { data, error } = await insforge.auth.exchangeOAuthCode(oauthCode)
-          if (error) throw error
-          if (data?.user && data?.accessToken) {
-            setUser(data.user)
-            setToken(data.accessToken)
-            await loadProfile(data.accessToken)
-            return
-          }
-        } catch (e) {
-          console.error('[auth] OAuth code exchange failed:', e.message)
-          setLoading(false)
-          return
-        }
+        // The SDK auto-detects and exchanges PKCE auth codes during initialization.
+        await insforge.auth.authCallbackHandled
       }
 
-      // Normal session hydration (stored refresh token path)
       const { data, error } = await insforge.auth.getCurrentUser()
-
       if (error || !data?.user) {
-        // No session — expected on first load. Silently clear any bad state.
+        const savedSession = getPersistedSession()
+        if (savedSession?.accessToken && savedSession?.user) {
+          const { accessToken, user: savedUser } = savedSession
+          if (insforge.auth?.tokenManager?.saveSession) {
+            insforge.auth.tokenManager.saveSession({ accessToken, user: savedUser })
+          }
+          insforge.getHttpClient().setAuthToken(accessToken)
+          setUser(savedUser)
+          setToken(accessToken)
+          await loadProfile(accessToken)
+          return
+        }
+
         try { await insforge.auth.signOut() } catch (_) {}
         setLoading(false)
         return
@@ -56,6 +81,7 @@ export function AuthProvider({ children }) {
       const t = headers['Authorization']?.replace('Bearer ', '') || null
       setToken(t)
       if (t) {
+        savePersistedSession({ accessToken: t, user: data.user })
         await loadProfile(t)
         return
       }
@@ -80,15 +106,17 @@ export function AuthProvider({ children }) {
     if (token) await loadProfile(token)
   }
 
-  // Called by Auth page after successful sign-in / sign-up / verify
   async function handleAuthSuccess(userData, accessToken) {
     setUser(userData)
     setToken(accessToken)
+    savePersistedSession({ accessToken, user: userData })
     await loadProfile(accessToken)
   }
 
   async function signOut() {
+    const insforge = getInsforgeClient()
     await insforge.auth.signOut()
+    clearPersistedSession()
     setUser(null)
     setProfile(null)
     setToken(null)

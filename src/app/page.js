@@ -1,8 +1,9 @@
 'use client'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { motion } from 'framer-motion'
 import { Sparkles, BookOpen, Zap, TreeDeciduous, ArrowRight, Brain, Target } from 'lucide-react'
+import { useAuth } from '@/contexts/AuthContext'
 
 const FEATURES = [
   { icon: Brain,         title: 'AI-Powered Quizzes',    desc: 'Upload any material and watch AI generate perfect review sessions tailored to your content.' },
@@ -30,7 +31,18 @@ const TEAM = [
 
 export default function Landing() {
   const router = useRouter()
+  const { user, loading } = useAuth()
   const [openHow, setOpenHow] = useState(null)
+
+  useEffect(() => {
+    if (!loading && user) {
+      router.push('/dashboard')
+    }
+  }, [loading, user, router])
+
+  if (loading) {
+    return null
+  }
 
   return (
     <div className="landing">
@@ -68,7 +80,7 @@ export default function Landing() {
 
       <section className="features-section" id="features">
         <div className="features-section-header">
-          <h2>Let's Go!:</h2>
+          <h2>Let&apos;s Go!:</h2>
           <div>Study smarter, not harder. Built for how you actually learn.<br />Speed rounds, quizzes, and flashcards all in one place.</div>
         </div>
         <div className="features-grid">
@@ -94,7 +106,7 @@ export default function Landing() {
           </motion.div>
           <motion.div className="feat-card feat-cta" initial={{ opacity: 0, y: 24 }} whileInView={{ opacity: 1, y: 0 }} transition={{ delay: 0.32 }} viewport={{ once: true }}>
             <div className="feat-cta-text">
-              <h3>Let's make things happen</h3>
+              <h3>Let&apos;s make things happen</h3>
               <p>Real students forget 70% of what they study within a day. Reviewly fixes that with smart review sessions that repeat what you need, exactly when you need it.</p>
               <button className="feat-cta-btn" onClick={() => router.push('/auth')}>Start Now!</button>
             </div>
@@ -158,8 +170,8 @@ export default function Landing() {
           <div className="about-text">
             <h2>About us</h2>
             <p>Reviewly is a school project. Five computer science students, all tired of the same problem — spending hours reviewing notes the night before an exam and still blanking out when it mattered. We figured there had to be a better way.</p>
-            <p style={{ marginTop: '1rem' }}>So we built one. Reviewly turns your own notes into structured review sessions that actually test you instead of just letting you re-read the same lines. Speed rounds when you're short on time. Quizzes when you want to go deep. Flashcards when you just need to drill. All generated from whatever you upload.</p>
-            <p style={{ marginTop: '1rem' }}>We're just five people who wanted to study smarter and thought other students might want the same thing.</p>
+            <p style={{ marginTop: '1rem' }}>So we built one. Reviewly turns your own notes into structured review sessions that actually test you instead of just letting you re-read the same lines. Speed rounds when you&apos;re short on time. Quizzes when you want to go deep. Flashcards when you just need to drill. All generated from whatever you upload.</p>
+            <p style={{ marginTop: '1rem' }}>We&apos;re just five people who wanted to study smarter and thought other students might want the same thing.</p>
           </div>
           <div className="about-visual">
             <img src="/assets/about-us-image.png" alt="About us image" />
@@ -171,7 +183,7 @@ export default function Landing() {
         <div className="cta-inner">
           <motion.div initial={{ opacity: 0, y: 18 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}>
             <h2>Ready to grow your knowledge tree?</h2>
-            <p>Join learners who've turned studying into an adventure.</p>
+            <p>Join learners who&apos;ve turned studying into an adventure.</p>
             <motion.button className="btn-primary btn-lg" whileHover={{ scale: 1.04 }} whileTap={{ scale: 0.97 }} onClick={() => router.push('/auth')}>
               Get Started Free <ArrowRight size={17} />
             </motion.button>
