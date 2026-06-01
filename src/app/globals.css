@@ -2092,7 +2092,7 @@ img {
   border-radius: var(--radius);
   padding: 1.35rem;
   cursor: pointer;
-  transition: all 0.2s;
+  transition: all 0.12s;
 }
 
 .module-card:hover {
@@ -3474,11 +3474,13 @@ img {
   display: flex;
   flex-direction: column;
   gap: 0.45rem;
+  min-width: 0;
 }
 .name-row {
   display: flex;
   align-items: center;
   gap: 0.75rem;
+  flex-wrap: wrap;
 }
 .name-row h2 {
   font-family: var(--font-display);
@@ -3497,11 +3499,14 @@ img {
   flex-wrap: wrap;
 }
 .profile-email {
-  display: flex;
+  display: inline-flex;
   align-items: center;
   gap: 0.4rem;
   font-size: 0.85rem;
   color: var(--text-muted);
+  min-width: 0;
+  overflow-wrap: anywhere;
+  word-break: break-word;
 }
 .profile-tree-stage {
   font-size: 0.875rem;
@@ -3582,6 +3587,12 @@ img {
   }
   .module-hero {
     flex-direction: column;
+  }
+  .profile-hero {
+    flex-direction: column;
+  }
+  .profile-info {
+    width: 100%;
   }
   .session-table-header,
   .session-table-row {
@@ -3673,18 +3684,16 @@ img {
   justify-content: center;
   width: 36px;
   height: 36px;
-  border-radius: var(--radius-sm);
-  background: rgba(255, 255, 255, 0.2);
   border: none;
   cursor: pointer;
-  color: #ffffff;
+  color: var(--text-secondary);
   transition: all 0.15s;
   flex-shrink: 0;
   padding: 0;
 }
 
 .token-expiration-close:hover {
-  background: rgba(255, 255, 255, 0.3);
+  color: var(--bg);
   transform: scale(1.05);
 }
 
