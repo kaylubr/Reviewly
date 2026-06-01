@@ -7,6 +7,9 @@ import { Toaster } from 'react-hot-toast'
 export const metadata = {
   title: "Reviewly",
   description: "AI-powered study review app",
+  icons: {
+    icon: '/logo.png',
+  },
 };
 
 export default function RootLayout({ children }) {
