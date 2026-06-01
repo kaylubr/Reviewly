@@ -1,6 +1,14 @@
 'use client'
 import { getInsforgeClient } from './insforge'
 
+// Event for token expiration that can be listened to globally
+export const tokenExpirationEvent = () => {
+  if (typeof window !== 'undefined') {
+    const event = new CustomEvent('tokenExpired')
+    window.dispatchEvent(event)
+  }
+}
+
 export async function apiRequest(path, options = {}, token = null) {
   const insforge = getInsforgeClient()
   const ANON_KEY = process.env.NEXT_PUBLIC_INSFORGE_ANON_KEY
@@ -25,6 +33,12 @@ export async function apiRequest(path, options = {}, token = null) {
     res = await fetch(path, { ...options, headers })
   } catch (err) {
     throw new Error('Network request failed. Please check your connection and try again.')
+  }
+
+  // Handle token expiration (401 Unauthorized)
+  if (res.status === 401) {
+    tokenExpirationEvent()
+    throw new Error('Your session has expired. Please log in again.')
   }
 
   if (!res.ok) {

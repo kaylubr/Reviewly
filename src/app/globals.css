@@ -3609,3 +3609,112 @@ img {
     align-items: stretch;
   }
 }
+
+/* ── Token Expiration Alert ───────────────────────────── */
+
+.token-expiration-alert {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 9999;
+  background: linear-gradient(135deg, #e84848 0%, #d63333 100%);
+  box-shadow: var(--shadow-lg);
+}
+
+.token-expiration-content {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  max-width: var(--max-width);
+  margin: 0 auto;
+  padding: 1rem 1.5rem;
+}
+
+.token-expiration-message {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+  flex: 1;
+  color: #ffffff;
+}
+
+.token-expiration-icon {
+  font-size: 1.25rem;
+  flex-shrink: 0;
+  margin-top: 0.125rem;
+}
+
+.token-expiration-title {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 0.95rem;
+  margin: 0 0 0.25rem 0;
+  color: #ffffff;
+}
+
+.token-expiration-description {
+  font-family: var(--font-body);
+  font-weight: 400;
+  font-size: 0.875rem;
+  margin: 0;
+  color: rgba(255, 255, 255, 0.95);
+  line-height: 1.4;
+}
+
+.token-expiration-close {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: var(--radius-sm);
+  background: rgba(255, 255, 255, 0.2);
+  border: none;
+  cursor: pointer;
+  color: #ffffff;
+  transition: all 0.15s;
+  flex-shrink: 0;
+  padding: 0;
+}
+
+.token-expiration-close:hover {
+  background: rgba(255, 255, 255, 0.3);
+  transform: scale(1.05);
+}
+
+.token-expiration-close:active {
+  transform: scale(0.95);
+}
+
+/* Adjust layout when alert is visible */
+@media (min-width: 768px) {
+  body.token-expiration-active {
+    padding-top: 0;
+  }
+}
+
+@media (max-width: 640px) {
+  .token-expiration-content {
+    padding: 0.875rem 1rem;
+    gap: 0.5rem;
+  }
+
+  .token-expiration-message {
+    gap: 0.5rem;
+  }
+
+  .token-expiration-title {
+    font-size: 0.875rem;
+  }
+
+  .token-expiration-description {
+    font-size: 0.8125rem;
+  }
+
+  .token-expiration-close {
+    width: 32px;
+    height: 32px;
+  }
+}

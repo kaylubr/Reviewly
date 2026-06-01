@@ -41,6 +41,7 @@ export function AuthProvider({ children }) {
   const [profile, setProfile] = useState(null)
   const [token, setToken] = useState(null)
   const [loading, setLoading] = useState(true)
+  const [tokenExpired, setTokenExpired] = useState(false)
   const hydrated = useRef(false)
   const { startLoading, stopLoading } = useLoading()
 
@@ -119,6 +120,19 @@ export function AuthProvider({ children }) {
     await loadProfile(accessToken)
   }
 
+  async function handleTokenExpired() {
+    setTokenExpired(true)
+  }
+
+  async function handleExpiredLogout() {
+    await signOut()
+    setTokenExpired(false)
+  }
+
+  async function dismissTokenExpiredAlert() {
+    setTokenExpired(false)
+  }
+
   async function signOut() {
     const insforge = getInsforgeClient()
     await insforge.auth.signOut()
@@ -129,7 +143,7 @@ export function AuthProvider({ children }) {
   }
 
   return (
-    <AuthContext.Provider value={{ user, profile, token, loading, signOut, refreshProfile, handleAuthSuccess }}>
+    <AuthContext.Provider value={{ user, profile, token, loading, signOut, refreshProfile, handleAuthSuccess, tokenExpired, handleTokenExpired, handleExpiredLogout, dismissTokenExpiredAlert }}>
       {children}
     </AuthContext.Provider>
   )

@@ -1,6 +1,7 @@
 import "./globals.css";
 import { AuthProvider } from '@/contexts/AuthContext'
 import { LoadingProvider } from '@/contexts/LoadingContext'
+import { AuthAlertWrapper } from '@/components/AuthAlertWrapper'
 import { Toaster } from 'react-hot-toast'
 
 export const metadata = {
@@ -14,8 +15,10 @@ export default function RootLayout({ children }) {
       <body>
         <LoadingProvider>
           <AuthProvider>
-            {children}
-            <Toaster position="top-center" />
+            <AuthAlertWrapper>
+              {children}
+              <Toaster position="top-center" />
+            </AuthAlertWrapper>
           </AuthProvider>
         </LoadingProvider>
       </body>
