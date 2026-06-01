@@ -734,6 +734,33 @@ img {
   border-radius: 50%;
   animation: spin 0.7s linear infinite;
 }
+.loading-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255, 255, 255, 0.18);
+  backdrop-filter: blur(10px);
+}
+.loading-overlay-panel {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 96px;
+  height: 96px;
+  border-radius: 24px;
+  background: rgba(255, 255, 255, 0.75);
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.12);
+}
+.loading-overlay-spinner {
+  width: 48px;
+  height: 48px;
+  border-width: 4px;
+  border-color: rgba(11, 11, 4, 0.15);
+  border-top-color: var(--lime);
+}
 @keyframes spin {
   to {
     transform: rotate(360deg);

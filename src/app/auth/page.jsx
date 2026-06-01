@@ -5,6 +5,7 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { Mail, Lock, User, Eye, EyeOff, ArrowLeft } from 'lucide-react'
 import { getInsforgeClient } from '@/lib/insforge'
 import { useAuth } from '@/contexts/AuthContext'
+import { useLoading } from '@/contexts/LoadingContext'
 import toast from 'react-hot-toast'
 
 function AuthContent() {
@@ -17,6 +18,7 @@ function AuthContent() {
   const [otp, setOtp] = useState('')
   const [oauthLoading, setOauthLoading] = useState(null)
   const { user, handleAuthSuccess } = useAuth()
+  const { startLoading, stopLoading } = useLoading()
   const router = useRouter()
 
   useEffect(() => {
@@ -30,6 +32,7 @@ function AuthContent() {
   async function handleSubmit(e) {
     e.preventDefault()
     setLoading(true)
+    startLoading()
     const insforge = getInsforgeClient()
     try {
       if (mode === 'signup') {
@@ -67,12 +70,14 @@ function AuthContent() {
       toast.error(err.message || 'Something went wrong')
     } finally {
       setLoading(false)
+      stopLoading()
     }
   }
 
   async function handleVerify(e) {
     e.preventDefault()
     setLoading(true)
+    startLoading()
     const insforge = getInsforgeClient()
     try {
       const { data, error } = await insforge.auth.verifyEmail({ email: form.email, otp })
@@ -84,11 +89,13 @@ function AuthContent() {
       toast.error(err.message || 'Invalid code')
     } finally {
       setLoading(false)
+      stopLoading()
     }
   }
 
   async function handleOAuth(provider) {
     setOauthLoading(provider)
+    startLoading()
     const insforge = getInsforgeClient()
     const { error } = await insforge.auth.signInWithOAuth({
       provider, redirectTo: `${window.location.origin}/auth`,
@@ -101,6 +108,7 @@ function AuthContent() {
         toast.error(error.message)
       }
       setOauthLoading(null)
+      stopLoading()
     }
   }
 
