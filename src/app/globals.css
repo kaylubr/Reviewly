@@ -76,6 +76,7 @@
   padding: 1.5rem 1rem;
   background: #fff;
   box-shadow: rgba(0, 0, 0, 0.16) 0px 1px 4px;
+  transition: width 0.25s ease, padding 0.25s ease;
 }
 
 /* Logo */
@@ -86,6 +87,7 @@
   padding: 0.25rem 0.5rem;
   margin-bottom: 1.75rem;
   text-decoration: none;
+  transition: gap 0.25s ease;
 }
 
 .sidebar-logo-img {
@@ -102,14 +104,6 @@
   color: var(--ink);
 }
 
-/* Smoothly fade/hide labels when collapsing */
-.sidebar-logo-text,
-.sidebar .nav-link span,
-.sidebar-level-label,
-.sidebar-logout-btn span {
-  transition: opacity 180ms ease, transform 180ms ease;
-}
-
 .sidebar-top {
   display: flex;
   align-items: center;
@@ -118,12 +112,12 @@
   margin-bottom: 1rem;
 }
 /* Nav links */
-  transition: width 220ms cubic-bezier(.2,.9,.2,1), box-shadow 220ms ease;
 .sidebar-links {
   display: flex;
   flex-direction: column;
   gap: 0.25rem;
   flex: 1;
+  transition: gap 0.25s ease;
 }
 
 .sidebar .nav-link {
@@ -139,6 +133,11 @@
   transition: all 0.15s;
   border: none;
   box-shadow: none;
+  transition: all 0.15s, gap 0.25s ease;
+}
+
+.sidebar-collapsed .sidebar .nav-link {
+  gap: 0;
 }
 
 .sidebar .nav-link:hover {
@@ -257,7 +256,7 @@
   width: 100%;
   padding-left: calc(var(--sidebar-width) + 1.5rem);
   overflow: auto;
-  transition: padding 220ms cubic-bezier(.2,.9,.2,1);
+  transition: padding-left 0.25s ease;
 }
 
 .sidebar-hidden .main-content {
@@ -273,14 +272,31 @@
   padding-left: calc(64px + 1.5rem);
 }
 
+.sidebar-logo-text,
+.sidebar .nav-link span,
+.sidebar-level-label,
+.sidebar-logout-btn span {
+  opacity: 1;
+  width: auto;
+  overflow: hidden;
+  transition: opacity 0.1s ease;
+  white-space: nowrap;
+}
+
 .sidebar-collapsed .sidebar-logo-text,
 .sidebar-collapsed .sidebar .nav-link span,
 .sidebar-collapsed .sidebar-level-label,
 .sidebar-collapsed .sidebar-logout-btn span {
   opacity: 0;
-  transform: translateX(-6px);
-  pointer-events: none;
-  display: inline-block;
+  width: 0;
+}
+
+.sidebar-collapsed .sidebar-links {
+  gap: 0;
+}
+
+.sidebar-collapsed .sidebar-logo {
+  gap: 0;
 }
 
 .sidebar-collapsed .sidebar-logo {
@@ -313,10 +329,6 @@
 
 .sidebar-collapsed .sidebar-bottom {
   align-items: center;
-}
-
-.sidebar-collapsed .sidebar-collapse-btn {
-  transform: translateX(100%) rotate(180deg);
 }
 
 /* Push main content right for legacy or alternate layout classes */
