@@ -198,6 +198,7 @@
 
 .sidebar-level-pill:hover {
   transform: scale(1.02);
+  background-color: var(--lime-dark);
 }
 
 .sidebar-level-pill:hover::before {
@@ -337,7 +338,7 @@
 
 .sidebar-collapsed .sidebar-level-pill {
   justify-content: center;
-  padding: 0.65rem;
+  padding: 1rem 1.2rem;
 }
 
 .sidebar-collapsed .sidebar-level-number {
@@ -345,7 +346,8 @@
 }
 
 .sidebar-collapsed .sidebar-logout-btn {
-  padding: 0.65rem;
+  padding: 1rem 0;
+  gap: 0;
 }
 
 .sidebar-collapsed .sidebar-bottom {
@@ -2004,58 +2006,70 @@ img {
 }
 .tree-summary-card {
   cursor: pointer;
-  border: 1.5px solid var(--border);
-  background: var(--ink);
-  color: white;
+  background: var(--bg-card);
+  color: var(--ink);
+  display: flex;
+  flex-direction: column;
 }
+
+.tree-summary-card .tree-card-content {
+  flex: 1;
+}
+
 .tree-card-content {
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 1rem;
 }
+
 .card-label {
   font-size: 0.73rem;
-  color: rgba(255, 255, 255, 0.5);
+  color: var(--text-muted);
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.07em;
   margin-bottom: 0.4rem;
 }
+
 .tree-level {
   font-family: var(--font-display);
   font-size: 3rem;
   font-weight: 600;
-  color: white;
+  color: var(--ink);
   line-height: 1;
 }
+
 .tree-stage-name {
   font-size: 0.875rem;
-  color: var(--lime);
+  color: var(--lime-dark);
   font-weight: 600;
   margin-bottom: 0.75rem;
 }
+
 .tree-preview {
   width: 80px;
   height: 80px;
   border-radius: 50%;
-  background: rgba(170, 255, 0, 0.15);
-  border: 2px solid rgba(170, 255, 0, 0.3);
+  background: var(--lime-glass);
+  border: 2px solid var(--lime);
   display: flex;
   align-items: center;
   justify-content: center;
-  color: var(--lime);
+  color: var(--lime-dark);
   flex-shrink: 0;
 }
+
 .tree-summary-card .card-footer {
-  color: var(--lime);
-  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  color: var(--lime-dark);
+  border-top: 1px solid var(--border);
   margin-top: 1.25rem;
   padding-top: 1rem;
 }
+
 .tree-summary-card .xpbar-track {
-  background: rgba(255, 255, 255, 0.1);
-  border-color: transparent;
+  background: rgba(170, 255, 0, 0.1);
+  border-color: rgba(170, 255, 0, 0.2);
 }
 
 .chart-card {

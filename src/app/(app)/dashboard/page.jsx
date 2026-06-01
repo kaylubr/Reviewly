@@ -2,7 +2,7 @@
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { motion } from 'framer-motion'
-import { Plus, BookOpen, TrendingUp, ChevronRight, TreeDeciduous } from 'lucide-react'
+import { Plus, BookOpen, TrendingUp, ChevronRight, Sprout } from 'lucide-react'
 import { getInsforgeClient } from '@/lib/insforge'
 import { useAuth } from '@/contexts/AuthContext'
 import { apiRequest } from '@/lib/api'
@@ -79,9 +79,9 @@ export default function Dashboard() {
               <p className="tree-stage-name">{treeStage.name}</p>
               <XPBar current={lvlInfo.currentLevelXp} max={lvlInfo.nextLevelXp} level={lvlInfo.level} />
             </div>
-            <motion.div className="tree-preview" animate={{ y: [0, -6, 0] }} transition={{ repeat: Infinity, duration: 3.5, ease: 'easeInOut' }}>
-              <TreeDeciduous size={36} strokeWidth={1.5} />
-            </motion.div>
+            <div className="tree-preview">
+              <Sprout size={36} strokeWidth={1.5} />
+            </div>
           </div>
           <div className="card-footer">View Progress <ChevronRight size={15} /></div>
         </motion.div>
