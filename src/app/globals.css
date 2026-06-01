@@ -237,15 +237,15 @@
 
 .main-content {
   flex: 1;
-  min-height: 100vh;
-  padding: 2.5rem 1.5rem;
+  min-height: 0;
+  width: 100%;
   padding-left: calc(var(--sidebar-width) + 1.5rem);
-  overflow-x: hidden;
+  overflow: auto;
   transition: padding 0.2s ease;
 }
 
 .sidebar-hidden .main-content {
-  padding-left: 1.5rem;
+  padding-left: 0;
 }
 
 /* Push main content right for legacy or alternate layout classes */
@@ -376,6 +376,13 @@ img {
   max-width: var(--max-width);
   margin: 0 auto;
   padding: 2.5rem 1.5rem 2.5rem;
+}
+
+.page.dashboard {
+  display: flex;
+  flex-direction: column;
+  min-height: 80vh;
+  max-width: 80vw;
 }
 .page h1 {
   font-family: var(--font-display);
@@ -930,6 +937,7 @@ img {
   background: var(--bg-secondary);
   color: var(--text-secondary);
   text-transform: capitalize;
+  text-align: center;
 }
 
 /* ─── Divider ─────────────────────────────────────────────── */
@@ -2075,7 +2083,7 @@ img {
   margin-bottom: 0.4rem;
 }
 .page-header {
-  margin-bottom: 1.5rem;
+  margin-bottom: 0.75rem;
 }
 .form-card {
   background: white;
@@ -2206,9 +2214,10 @@ img {
   align-items: flex-start;
   justify-content: space-between;
   gap: 1.5rem;
-  margin: 1.5rem 0;
+  margin: 0.75rem 0 1.5rem;
   flex-wrap: wrap;
 }
+
 .module-hero h1 {
   font-size: 1.75rem;
   margin: 0.5rem 0;
@@ -3247,7 +3256,7 @@ img {
 .session-table-header,
 .session-table-row {
   display: grid;
-  grid-template-columns: 90px 1fr 70px 60px 70px 80px;
+  grid-template-columns: 90px minmax(0, 1fr) 70px 60px 70px 80px;
   gap: 0.5rem;
   align-items: center;
   font-size: 0.82rem;

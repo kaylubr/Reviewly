@@ -25,11 +25,13 @@ export default function AppLayout({ children }) {
 
   if (!user) return null
 
-  const hideSidebar = pathname?.startsWith('/review')
+  // Completely hide sidebar on review pages
+  const isReviewPage = pathname?.includes('/review/')
+  const hideSidebar = isReviewPage
 
   return (
     <div className={`app-layout ${hideSidebar ? 'sidebar-hidden' : ''}`}>
-      {!hideSidebar && <Navbar />}
+      {!isReviewPage && <Navbar />}
       <main className="main-content">{children}</main>
     </div>
   )
