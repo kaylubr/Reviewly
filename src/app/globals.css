@@ -261,7 +261,7 @@
 }
 
 .sidebar-collapse-btn:hover {
-  background: var(--bg-secondary);
+  color: var(--text);
 }
 
 /* App layout helpers */
