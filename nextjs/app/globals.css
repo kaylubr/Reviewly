@@ -228,7 +228,27 @@
   box-shadow: 0 4px 16px rgba(232, 72, 72, 0.3);
 }
 
-/* Push main content right */
+/* App layout helpers */
+.app-layout {
+  display: flex;
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+.main-content {
+  flex: 1;
+  min-height: 100vh;
+  padding: 2.5rem 1.5rem;
+  padding-left: calc(var(--sidebar-width) + 1.5rem);
+  overflow-x: hidden;
+  transition: padding 0.2s ease;
+}
+
+.sidebar-hidden .main-content {
+  padding-left: 1.5rem;
+}
+
+/* Push main content right for legacy or alternate layout classes */
 .main.with-sidebar {
   padding-left: var(--sidebar-width);
 }
@@ -239,6 +259,9 @@
     width: 64px;
     padding: 1.25rem 0.5rem;
     align-items: center;
+  }
+  .main-content {
+    padding-left: calc(64px + 1rem);
   }
 
   .sidebar-logo-text,

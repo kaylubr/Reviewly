@@ -1,11 +1,12 @@
 'use client'
 import { useEffect } from 'react'
-import { useRouter } from 'next/navigation'
+import { usePathname, useRouter } from 'next/navigation'
 import { useAuth } from '@/contexts/AuthContext'
 import Navbar from '@/components/Navbar'
 
 export default function AppLayout({ children }) {
   const { user, loading } = useAuth()
+  const pathname = usePathname()
   const router = useRouter()
 
   useEffect(() => {
@@ -24,9 +25,11 @@ export default function AppLayout({ children }) {
 
   if (!user) return null
 
+  const hideSidebar = pathname?.startsWith('/review')
+
   return (
-    <div className="app-layout">
-      <Navbar />
+    <div className={`app-layout ${hideSidebar ? 'sidebar-hidden' : ''}`}>
+      {!hideSidebar && <Navbar />}
       <main className="main-content">{children}</main>
     </div>
   )
