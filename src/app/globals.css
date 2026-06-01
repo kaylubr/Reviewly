@@ -1,9 +1,4 @@
-/* ============================================================
-   Reviewly — Design System
-   Light theme · Lime green accent · Bold geometric type
-   ============================================================ */
-
-@import url("https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,600;12..96,700;12..96,800&family=DM+Sans:wght@400;500;600&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Raleway:wght@400;500;600;700;800&display=swap");
 
 :root {
   /* ── Brand Colors ─────────────────────────── */
@@ -32,6 +27,10 @@
   --text-muted: #888888;
   --text-inverse: #ffffff;
 
+  /* ── Typography ───────────────────────────────── */
+  --font-display: "Raleway", sans-serif;
+  --font-body: "Raleway", sans-serif;
+
   /* ── Border ───────────────────────────────── */
   --border: #e0e0dc;
   --border-dark: rgba(255, 255, 255, 0.1);
@@ -52,8 +51,8 @@
   --shadow-lime: 0 4px 24px rgba(170, 255, 0, 0.3);
 
   /* ── Typography ───────────────────────────── */
-  --font-display: "Bricolage Grotesque", sans-serif;
-  --font-body: "DM Sans", sans-serif;
+  --font-display: "Raleway", sans-serif;
+  --font-body: "Raleway", sans-serif;
 
   --button-color: #191a23;
 
@@ -3686,14 +3685,14 @@ img {
   height: 36px;
   border: none;
   cursor: pointer;
-  color: var(--text-secondary);
+  color: var(--bg);
   transition: all 0.15s;
   flex-shrink: 0;
   padding: 0;
 }
 
 .token-expiration-close:hover {
-  color: var(--bg);
+  color: var(--bg-dark);
   transform: scale(1.05);
 }
 
