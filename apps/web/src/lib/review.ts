@@ -9,6 +9,7 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { apiRequest } from './api';
 import { meQueryKey } from './auth';
 import { modulesQueryKey } from './modules';
+import { sessionsQueryKey } from './sessions';
 
 export type SessionStats = {
   correctAnswers: number;
@@ -68,6 +69,7 @@ export function useCompleteSession() {
     onSuccess: () => {
       void queryClient.invalidateQueries({ queryKey: meQueryKey });
       void queryClient.invalidateQueries({ queryKey: modulesQueryKey });
+      void queryClient.invalidateQueries({ queryKey: sessionsQueryKey });
     },
   });
 }

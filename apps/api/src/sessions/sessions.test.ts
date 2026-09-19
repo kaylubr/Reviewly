@@ -187,3 +187,48 @@ describe('POST /api/sessions/complete', () => {
     expect(response.statusCode).toBe(404);
   });
 });
+
+describe('GET /api/sessions/history', () => {
+  it('requires a session', async () => {
+    const response = await app.inject({ method: 'GET', url: '/api/sessions/history' });
+
+    expect(response.statusCode).toBe(401);
+  });
+
+  it('returns the user sessions newest first, with the module title', async () => {
+    const response = await app.inject({
+      method: 'GET',
+      url: '/api/sessions/history',
+      headers: { cookie },
+    });
+
+    expect(response.statusCode).toBe(200);
+
+    const listed = response.json().sessions;
+    expect(listed.length).toBeGreaterThan(0);
+    expect(listed[0].moduleTitle).toBe('Session module');
+
+    const dates = listed.map((session: { completedAt: string }) => session.completedAt);
+    expect(dates).toEqual([...dates].sort().reverse());
+  });
+
+  it('never shows another user sessions', async () => {
+    const response = await app.inject({
+      method: 'GET',
+      url: '/api/sessions/history',
+      headers: { cookie: strangerCookie },
+    });
+
+    expect(response.json().sessions).toEqual([]);
+  });
+
+  it('honours the limit', async () => {
+    const response = await app.inject({
+      method: 'GET',
+      url: '/api/sessions/history?limit=1',
+      headers: { cookie },
+    });
+
+    expect(response.json().sessions).toHaveLength(1);
+  });
+});

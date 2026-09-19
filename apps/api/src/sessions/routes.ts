@@ -1,10 +1,13 @@
-import { and, eq, sql } from 'drizzle-orm';
+import { and, desc, eq, sql } from 'drizzle-orm';
 import type { FastifyInstance } from 'fastify';
 import { z } from 'zod';
 import { currentUser, requireAuth } from '../auth/guard';
 import { db } from '../db/client';
 import { modules, sessions, users } from '../db/schema';
 import { first } from '../lib/rows';
+
+const DEFAULT_HISTORY_LIMIT = 100;
+const MAX_HISTORY_LIMIT = 500;
 
 const completeBody = z
   .object({
@@ -18,7 +21,49 @@ const completeBody = z
     message: 'correctAnswers cannot exceed totalQuestions',
   });
 
+function parseLimit(raw: unknown): number {
+  const parsed = Number.parseInt(String(raw ?? DEFAULT_HISTORY_LIMIT), 10);
+
+  if (!Number.isFinite(parsed) || parsed < 1) {
+    return DEFAULT_HISTORY_LIMIT;
+  }
+
+  return Math.min(parsed, MAX_HISTORY_LIMIT);
+}
+
 export async function sessionRoutes(app: FastifyInstance): Promise<void> {
+  app.get<{ Querystring: { limit?: string } }>(
+    '/api/sessions/history',
+    { preHandler: requireAuth },
+    async (request) => {
+      const user = currentUser(request);
+
+      const rows = await db
+        .select({
+          id: sessions.id,
+          mode: sessions.mode,
+          score: sessions.score,
+          correctAnswers: sessions.correctAnswers,
+          totalQuestions: sessions.totalQuestions,
+          durationSeconds: sessions.durationSeconds,
+          completedAt: sessions.completedAt,
+          moduleTitle: modules.title,
+        })
+        .from(sessions)
+        .leftJoin(modules, eq(modules.id, sessions.moduleId))
+        .where(eq(sessions.userId, user.id))
+        .orderBy(desc(sessions.completedAt))
+        .limit(parseLimit(request.query.limit));
+
+      return {
+        sessions: rows.map((row) => ({
+          ...row,
+          completedAt: row.completedAt.toISOString(),
+        })),
+      };
+    },
+  );
+
   app.post('/api/sessions/complete', { preHandler: requireAuth }, async (request, reply) => {
     const user = currentUser(request);
     const body = completeBody.parse(request.body);

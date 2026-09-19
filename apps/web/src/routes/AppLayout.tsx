@@ -1,7 +1,15 @@
-import { useEffect, useState } from 'react';
+import { Suspense, useEffect, useState } from 'react';
 import { Outlet, useLocation, useNavigate } from 'react-router';
 import { Navbar } from '../components/Navbar';
 import { useMe } from '../lib/auth';
+
+function FullPageSpinner() {
+  return (
+    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: '100vh' }}>
+      <span className="spinner-lg" />
+    </div>
+  );
+}
 
 export function AppLayout() {
   const { data: user, isPending } = useMe();
@@ -16,11 +24,7 @@ export function AppLayout() {
   }, [isPending, user, navigate]);
 
   if (isPending) {
-    return (
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: '100vh' }}>
-        <span className="spinner-lg" />
-      </div>
-    );
+    return <FullPageSpinner />;
   }
 
   if (!user) {
@@ -42,7 +46,9 @@ export function AppLayout() {
         />
       )}
       <main className="main-content">
-        <Outlet />
+        <Suspense fallback={<FullPageSpinner />}>
+          <Outlet />
+        </Suspense>
       </main>
     </div>
   );

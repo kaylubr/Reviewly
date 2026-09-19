@@ -69,3 +69,14 @@ export type SessionCompleteDto = {
   moduleTotalSessions: number;
   masteryScore: number;
 };
+
+export type SessionHistoryDto = {
+  id: string;
+  mode: ReviewMode;
+  score: number;
+  correctAnswers: number;
+  totalQuestions: number;
+  durationSeconds: number;
+  completedAt: string;
+  moduleTitle: string | null;
+};

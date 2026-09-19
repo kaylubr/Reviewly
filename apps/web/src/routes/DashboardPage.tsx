@@ -1,19 +1,43 @@
+import type { SessionHistoryDto } from '@reviewly/shared';
 import { motion } from 'framer-motion';
 import { BookOpen, Plus } from 'lucide-react';
 import { useNavigate } from 'react-router';
 import { ModuleCard } from '../components/ModuleCard';
+import { StatCard } from '../components/StatCard';
 import { useMe } from '../lib/auth';
+import { formatDate, hoursFromMinutes } from '../lib/format';
 import { useModules } from '../lib/modules';
+import { MODE_COLORS, useSessionHistory } from '../lib/sessions';
 
 function greeting() {
   const hour = new Date().getHours();
   return hour < 12 ? 'morning' : hour < 17 ? 'afternoon' : 'evening';
 }
 
+function SessionRow({ session }: { session: SessionHistoryDto }) {
+  return (
+    <div className="session-row">
+      <span
+        className="mode-badge"
+        style={{
+          borderLeft: `3px solid ${MODE_COLORS[session.mode] ?? 'var(--border)'}`,
+          paddingLeft: '0.5rem',
+        }}
+      >
+        {session.mode}
+      </span>
+      <span className="session-module">{session.moduleTitle ?? 'Unknown'}</span>
+      <span className="session-score">{session.score}%</span>
+      <span className="session-date">{formatDate(session.completedAt)}</span>
+    </div>
+  );
+}
+
 export function DashboardPage() {
   const navigate = useNavigate();
   const { data: user } = useMe();
   const { data: modules, isPending } = useModules();
+  const { data: sessions } = useSessionHistory(5);
 
   return (
     <div className="page dashboard">
@@ -32,6 +56,20 @@ export function DashboardPage() {
         >
           <Plus size={17} /> New Module
         </motion.button>
+      </div>
+
+      <div className="stats-row">
+        <StatCard
+          icon={<img src="/assets/stat_card/Sessions.svg" alt="" width={28} height={28} />}
+          label="Sessions"
+          value={user?.totalSessions ?? 0}
+        />
+        <StatCard
+          icon={<img src="/assets/stat_card/StudyTime.svg" alt="" width={28} height={28} />}
+          label="Study Time"
+          value={hoursFromMinutes(user?.totalStudyTimeMinutes ?? 0)}
+          suffix="hrs"
+        />
       </div>
 
       <div className="section-header">
@@ -63,7 +101,7 @@ export function DashboardPage() {
             <BookOpen size={28} strokeWidth={1.5} />
           </div>
           <h3>No modules yet</h3>
-          <p>Upload your notes or create a module to get started</p>
+          <p>Create a module from your notes to get started</p>
           <button
             className="btn-primary"
             onClick={() => navigate('/modules/create')}
@@ -72,6 +110,22 @@ export function DashboardPage() {
             <Plus size={15} /> Create your first module
           </button>
         </motion.div>
+      )}
+
+      {sessions && sessions.length > 0 && (
+        <>
+          <div className="section-header">
+            <h2>Recent Sessions</h2>
+            <button className="btn-ghost btn-sm" onClick={() => navigate('/analytics')}>
+              View all
+            </button>
+          </div>
+          <div className="sessions-list">
+            {sessions.map((session) => (
+              <SessionRow key={session.id} session={session} />
+            ))}
+          </div>
+        </>
       )}
     </div>
   );

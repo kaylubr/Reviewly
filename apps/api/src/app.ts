@@ -13,6 +13,7 @@ import { createGeminiGenerator } from './generation/gemini';
 import { createGenerateRoutes } from './generation/routes';
 import type { QuestionGenerator } from './generation/types';
 import { moduleRoutes } from './modules/routes';
+import { profileRoutes } from './profile/routes';
 import { reviewRoutes } from './review/routes';
 import { sessionRoutes } from './sessions/routes';
 
@@ -53,6 +54,7 @@ export function buildApp({ logger = true, generator }: BuildAppOptions = {}): Fa
   app.register(createGenerateRoutes(generator ?? createGeminiGenerator()));
   app.register(reviewRoutes);
   app.register(sessionRoutes);
+  app.register(profileRoutes);
 
   if (hasWebBuild) {
     app.register(fastifyStatic, { root: webDist });

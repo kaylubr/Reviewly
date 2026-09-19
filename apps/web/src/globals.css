@@ -3372,7 +3372,7 @@ img {
 .session-table-header,
 .session-table-row {
   display: grid;
-  grid-template-columns: 90px minmax(0, 1fr) 70px 60px 70px 80px;
+  grid-template-columns: 90px minmax(0, 1fr) 70px 70px 80px;
   gap: 0.5rem;
   align-items: center;
   font-size: 0.82rem;
@@ -3595,10 +3595,10 @@ img {
   }
   .session-table-header,
   .session-table-row {
-    grid-template-columns: 80px 1fr 60px 50px;
+    grid-template-columns: 80px 1fr 60px 60px;
   }
-  .session-table-header span:nth-child(5),
-  .session-table-row span:nth-child(5) {
+  .session-table-header span:nth-child(4),
+  .session-table-row span:nth-child(4) {
     display: none;
   }
   .mcq-options {
