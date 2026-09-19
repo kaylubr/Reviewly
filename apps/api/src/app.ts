@@ -13,6 +13,8 @@ import { createGeminiGenerator } from './generation/gemini';
 import { createGenerateRoutes } from './generation/routes';
 import type { QuestionGenerator } from './generation/types';
 import { moduleRoutes } from './modules/routes';
+import { reviewRoutes } from './review/routes';
+import { sessionRoutes } from './sessions/routes';
 
 const MAX_UPLOAD_BYTES = 20 * 1024 * 1024;
 const webDist = fileURLToPath(new URL('../../web/dist', import.meta.url));
@@ -49,6 +51,8 @@ export function buildApp({ logger = true, generator }: BuildAppOptions = {}): Fa
   app.register(moduleRoutes);
   app.register(extractRoutes);
   app.register(createGenerateRoutes(generator ?? createGeminiGenerator()));
+  app.register(reviewRoutes);
+  app.register(sessionRoutes);
 
   if (hasWebBuild) {
     app.register(fastifyStatic, { root: webDist });
