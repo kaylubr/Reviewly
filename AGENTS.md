@@ -1,5 +1,22 @@
 # AGENTS.md
 
+## Project layout
+
+Reviewly is mid-migration, so two apps coexist:
+
+- `legacy/` — the old Next.js 16 app. Still runs (`cd legacy && npm run dev`, port 3000) and still uses InsForge. Deleted at the end of the migration.
+- `apps/web` — the new React 19 + Vite SPA.
+- `apps/api` — the new Fastify 5 API.
+- `packages/shared` — types shared between the two.
+
+Read `docs/glossary.md` before naming anything. Read `docs/adr/` before proposing an architectural change — those decisions were deliberate and are not up for silent revision.
+
+All new code goes in `apps/` or `packages/` and must not use InsForge. The InsForge guidance below applies only to `legacy/`.
+
+## Commits
+
+Write plain commit messages. Never add trailers, including `Co-Authored-By`.
+
 <!-- INSFORGE:START -->
 ## InsForge backend
 

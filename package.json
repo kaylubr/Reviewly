@@ -1,0 +1,11 @@
+{
+  "name": "reviewly",
+  "private": true,
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "engines": {
+    "node": ">=20"
+  }
+}
