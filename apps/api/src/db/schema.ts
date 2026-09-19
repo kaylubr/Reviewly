@@ -11,6 +11,7 @@ import {
   timestamp,
   uuid,
 } from 'drizzle-orm/pg-core';
+import type { ReviewMode } from '@reviewly/shared';
 
 export const users = pgTable('users', {
   id: uuid('id').primaryKey().defaultRandom(),
@@ -93,8 +94,6 @@ export const mcqQuestions = pgTable(
   },
   (table) => [index('mcq_questions_module_id_idx').on(table.moduleId)],
 );
-
-export type ReviewMode = 'flashcard' | 'mcq' | 'speed';
 
 export const sessions = pgTable(
   'sessions',

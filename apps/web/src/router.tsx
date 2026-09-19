@@ -1,7 +1,10 @@
 import { createBrowserRouter } from 'react-router';
 import { AppLayout } from './routes/AppLayout';
 import { AuthPage } from './routes/AuthPage';
+import { DashboardPage } from './routes/DashboardPage';
 import { LandingPage } from './routes/LandingPage';
+import { ModuleCreatePage } from './routes/ModuleCreatePage';
+import { ModuleDetailPage } from './routes/ModuleDetailPage';
 import { Placeholder } from './routes/Placeholder';
 
 export const router = createBrowserRouter([
@@ -10,11 +13,11 @@ export const router = createBrowserRouter([
   {
     element: <AppLayout />,
     children: [
-      { path: '/dashboard', element: <Placeholder title="Dashboard" /> },
+      { path: '/dashboard', element: <DashboardPage /> },
+      { path: '/modules/create', element: <ModuleCreatePage /> },
+      { path: '/modules/:id', element: <ModuleDetailPage /> },
       { path: '/profile', element: <Placeholder title="Profile" /> },
       { path: '/analytics', element: <Placeholder title="Analytics" /> },
-      { path: '/modules/create', element: <Placeholder title="Create a module" /> },
-      { path: '/modules/:id', element: <Placeholder title="Module" /> },
       { path: '/review/:moduleId/:mode', element: <Placeholder title="Review" /> },
     ],
   },

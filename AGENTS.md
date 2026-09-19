@@ -13,6 +13,8 @@ Read `docs/glossary.md` before naming anything. Read `docs/adr/` before proposin
 
 All new code goes in `apps/` or `packages/` and must not use InsForge. The InsForge guidance below applies only to `legacy/`.
 
+`packages/shared` is type-only on purpose: both apps import from it with `import type`, so nothing resolves the package at runtime and the api keeps working under tsx. Do not add runtime values to it.
+
 ## Commits
 
 Write plain commit messages. Never add trailers, including `Co-Authored-By`.

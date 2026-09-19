@@ -1,15 +1,6 @@
+import type { UserDto } from '@reviewly/shared';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { ApiError, apiRequest } from './api';
-
-export type User = {
-  id: string;
-  email: string;
-  username: string | null;
-  avatarUrl: string | null;
-  totalSessions: number;
-  totalStudyTimeMinutes: number;
-  createdAt: string;
-};
 
 export const meQueryKey = ['me'];
 
@@ -18,7 +9,7 @@ export function useMe() {
     queryKey: meQueryKey,
     queryFn: async () => {
       try {
-        const data = await apiRequest<{ user: User }>('/api/auth/me');
+        const data = await apiRequest<{ user: UserDto }>('/api/auth/me');
         return data.user;
       } catch (error) {
         if (error instanceof ApiError && error.status === 401) {
@@ -42,7 +33,7 @@ export function useSignUp() {
 
   return useMutation({
     mutationFn: (input: SignUpInput) =>
-      apiRequest<{ user: User }>('/api/auth/sign-up', {
+      apiRequest<{ user: UserDto }>('/api/auth/sign-up', {
         method: 'POST',
         body: JSON.stringify(input),
       }),
@@ -57,7 +48,7 @@ export function useSignIn() {
 
   return useMutation({
     mutationFn: (input: { email: string; password: string }) =>
-      apiRequest<{ user: User }>('/api/auth/sign-in', {
+      apiRequest<{ user: UserDto }>('/api/auth/sign-in', {
         method: 'POST',
         body: JSON.stringify(input),
       }),

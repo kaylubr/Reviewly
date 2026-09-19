@@ -8,6 +8,7 @@ import { ZodError } from 'zod';
 import { authRoutes } from './auth/routes';
 import { pool } from './db/client';
 import { requireEnv } from './env';
+import { moduleRoutes } from './modules/routes';
 
 const MAX_UPLOAD_BYTES = 20 * 1024 * 1024;
 const webDist = fileURLToPath(new URL('../../web/dist', import.meta.url));
@@ -40,6 +41,7 @@ export function buildApp({ logger = true }: BuildAppOptions = {}): FastifyInstan
   app.register(fastifyCookie, { secret: requireEnv('SESSION_COOKIE_SECRET') });
   app.register(fastifyMultipart, { limits: { fileSize: MAX_UPLOAD_BYTES } });
   app.register(authRoutes);
+  app.register(moduleRoutes);
 
   if (hasWebBuild) {
     app.register(fastifyStatic, { root: webDist });
