@@ -79,7 +79,7 @@ export function AuthPage() {
           >
             <h2>{mode === 'signup' ? 'Create your account' : 'Welcome back'}</h2>
             <p className="auth-subtitle">
-              {mode === 'signup' ? 'Start growing your knowledge tree today' : 'Continue your learning journey'}
+              {mode === 'signup' ? 'Create an account to start reviewing' : 'Continue your learning journey'}
             </p>
 
             <form onSubmit={handleSubmit} className="auth-form">

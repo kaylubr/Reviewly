@@ -24,7 +24,7 @@ const MODES = [
     id: 'speed',
     icon: '/assets/stat_card/StudyTime.svg',
     title: 'Speed Round',
-    desc: 'Race the clock. Combo multipliers and streak bonuses.',
+    desc: 'Race the clock and answer as many questions as you can in sixty seconds.',
     color: 'amber',
   },
 ];

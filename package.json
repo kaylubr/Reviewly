@@ -5,6 +5,15 @@
     "apps/*",
     "packages/*"
   ],
+  "scripts": {
+    "dev:api": "npm run dev --workspace @reviewly/api",
+    "dev:web": "npm run dev --workspace web",
+    "build": "npm run build --workspace web",
+    "test": "npm run test --workspaces --if-present",
+    "typecheck": "npm run typecheck --workspaces --if-present",
+    "db:generate": "npm run db:generate --workspace @reviewly/api",
+    "db:migrate": "npm run db:migrate --workspace @reviewly/api"
+  },
   "engines": {
     "node": ">=20"
   }

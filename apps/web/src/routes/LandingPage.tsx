@@ -4,12 +4,12 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router';
 
 const HOW_TO = [
-  { num: '01', title: 'Upload your study material',     desc: 'Paste notes or upload a PDF. Our AI will extract all key concepts automatically.' },
-  { num: '02', title: 'AI generates your review session', desc: 'Flashcards, MCQ questions, and speed rounds are created in seconds from your content.' },
-  { num: '03', title: 'Review and earn XP',             desc: 'Complete sessions to earn experience points, build streaks, and master your material.' },
-  { num: '04', title: 'Watch your tree grow',           desc: 'Level up to unlock new tree forms — a visual representation of your growing knowledge.' },
-  { num: '05', title: 'Track your progress',            desc: 'Analytics show mastery per module, weekly XP, session history and more.' },
-  { num: '06', title: 'Keep the streak alive',          desc: 'Daily streaks give bonus XP multipliers. Consistency is the key to mastery.' },
+  { num: '01', title: 'Upload your study material',     desc: 'Paste notes or upload a PDF. The text is extracted so questions can be built from it.' },
+  { num: '02', title: 'AI generates your review session', desc: 'Flashcards, multiple choice questions and a short summary are created in one pass from your content.' },
+  { num: '03', title: 'Review in three modes',          desc: 'Flip flashcards, sit a multiple choice quiz, or race the clock in a speed round.' },
+  { num: '04', title: 'See what you have mastered',     desc: 'Every session updates that module\u2019s mastery score, so the weaker topics stand out.' },
+  { num: '05', title: 'Track your progress',            desc: 'Analytics show mastery per module, your session history and your average score.' },
+  { num: '06', title: 'Regenerate any time',            desc: 'If the questions miss the mark, regenerate the module and run the session again.' },
 ]
 
 const TEAM = [
@@ -162,8 +162,8 @@ export function LandingPage() {
       <section className="cta-section">
         <div className="cta-inner">
           <motion.div initial={{ opacity: 0, y: 18 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}>
-            <h2>Ready to grow your knowledge tree?</h2>
-            <p>Join learners who&apos;ve turned studying into an adventure.</p>
+            <h2>Ready to start reviewing?</h2>
+            <p>Turn your own notes into questions that actually test you.</p>
             <motion.button className="btn-primary btn-lg" whileHover={{ scale: 1.04 }} whileTap={{ scale: 0.97 }} onClick={() => navigate('/auth')}>
               Get Started Free <ArrowRight size={17} />
             </motion.button>
