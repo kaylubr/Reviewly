@@ -1,19 +1,12 @@
 import { eq } from 'drizzle-orm';
-import { Client, type QueryResult, type QueryResultRow } from 'pg';
+import { Client } from 'pg';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 import { requireEnv } from '../env';
+import { first } from '../lib/rows';
 import { db } from './client';
 import { flashcards, modules, users } from './schema';
 
 let client: Client;
-
-function firstRow<T extends QueryResultRow>(result: QueryResult<T>): T {
-  const row = result.rows[0];
-  if (!row) {
-    throw new Error('Expected the query to return at least one row');
-  }
-  return row;
-}
 
 beforeAll(async () => {
   client = new Client({ connectionString: requireEnv('DATABASE_URL') });
@@ -65,7 +58,7 @@ describe('schema', () => {
       "select pg_get_constraintdef(oid) as definition from pg_constraint where conname = 'sessions_mode_check'",
     );
 
-    const { definition } = firstRow(result);
+    const { definition } = first(result.rows);
     expect(definition).toContain("'flashcard'");
     expect(definition).toContain("'mcq'");
     expect(definition).toContain("'speed'");
@@ -85,13 +78,13 @@ describe('schema', () => {
         'insert into users (email, password_hash) values ($1, $2) returning id',
         ['cascade-probe@reviewly.test', 'not-a-real-hash'],
       );
-      const userId = firstRow(inserted).id;
+      const userId = first(inserted.rows).id;
 
       const insertedModule = await client.query<{ id: string }>(
         'insert into modules (user_id, title) values ($1, $2) returning id',
         [userId, 'Cascade probe'],
       );
-      const moduleId = firstRow(insertedModule).id;
+      const moduleId = first(insertedModule.rows).id;
 
       await client.query(
         'insert into flashcards (module_id, question, answer) values ($1, $2, $3)',
@@ -104,7 +97,7 @@ describe('schema', () => {
         'select count(*) from flashcards where module_id = $1',
         [moduleId],
       );
-      expect(firstRow(remaining).count).toBe('0');
+      expect(first(remaining.rows).count).toBe('0');
 
       const remainingModules = await db.select().from(modules).where(eq(modules.id, moduleId));
       expect(remainingModules).toEqual([]);

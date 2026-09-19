@@ -5,7 +5,7 @@ import { buildApp } from './app';
 let app: FastifyInstance;
 
 beforeAll(async () => {
-  app = buildApp();
+  app = buildApp({ logger: false });
   await app.ready();
 });
 

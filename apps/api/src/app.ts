@@ -5,6 +5,7 @@ import Fastify, { type FastifyError, type FastifyInstance } from 'fastify';
 import { existsSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { ZodError } from 'zod';
+import { authRoutes } from './auth/routes';
 import { pool } from './db/client';
 import { requireEnv } from './env';
 
@@ -12,22 +13,33 @@ const MAX_UPLOAD_BYTES = 20 * 1024 * 1024;
 const webDist = fileURLToPath(new URL('../../web/dist', import.meta.url));
 const hasWebBuild = existsSync(webDist);
 
-export function buildApp(): FastifyInstance {
-  const isProduction = process.env.NODE_ENV === 'production';
+type BuildAppOptions = {
+  logger?: boolean;
+};
 
-  const app = Fastify({
-    logger: isProduction
-      ? true
-      : {
-          transport: {
-            target: 'pino-pretty',
-            options: { translateTime: 'HH:MM:ss', ignore: 'pid,hostname' },
-          },
-        },
-  });
+function loggerConfig(enabled: boolean) {
+  if (!enabled) {
+    return false;
+  }
+  if (process.env.NODE_ENV === 'production') {
+    return true;
+  }
+  return {
+    transport: {
+      target: 'pino-pretty',
+      options: { translateTime: 'HH:MM:ss', ignore: 'pid,hostname' },
+    },
+  };
+}
+
+export function buildApp({ logger = true }: BuildAppOptions = {}): FastifyInstance {
+  const app = Fastify({ logger: loggerConfig(logger) });
+
+  app.decorateRequest('user', null);
 
   app.register(fastifyCookie, { secret: requireEnv('SESSION_COOKIE_SECRET') });
   app.register(fastifyMultipart, { limits: { fileSize: MAX_UPLOAD_BYTES } });
+  app.register(authRoutes);
 
   if (hasWebBuild) {
     app.register(fastifyStatic, { root: webDist });
