@@ -8,6 +8,7 @@ import { ZodError } from 'zod';
 import { authRoutes } from './auth/routes';
 import { pool } from './db/client';
 import { requireEnv } from './env';
+import { extractRoutes } from './extract/routes';
 import { moduleRoutes } from './modules/routes';
 
 const MAX_UPLOAD_BYTES = 20 * 1024 * 1024;
@@ -42,6 +43,7 @@ export function buildApp({ logger = true }: BuildAppOptions = {}): FastifyInstan
   app.register(fastifyMultipart, { limits: { fileSize: MAX_UPLOAD_BYTES } });
   app.register(authRoutes);
   app.register(moduleRoutes);
+  app.register(extractRoutes);
 
   if (hasWebBuild) {
     app.register(fastifyStatic, { root: webDist });
@@ -50,6 +52,9 @@ export function buildApp({ logger = true }: BuildAppOptions = {}): FastifyInstan
   app.setErrorHandler((error: FastifyError, request, reply) => {
     if (error instanceof ZodError) {
       return reply.code(400).send({ error: 'Validation failed', issues: error.issues });
+    }
+    if (error.code === 'FST_REQ_FILE_TOO_LARGE') {
+      return reply.code(413).send({ error: 'File is too large. Maximum 20 MB allowed.' });
     }
     if (error.statusCode && error.statusCode < 500) {
       return reply.code(error.statusCode).send({ error: error.message });

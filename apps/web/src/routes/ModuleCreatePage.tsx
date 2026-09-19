@@ -1,15 +1,58 @@
 import { motion } from 'framer-motion';
-import { ArrowLeft, Plus, Tag, X } from 'lucide-react';
-import { useState } from 'react';
+import { ArrowLeft, Plus, Tag, Upload, X } from 'lucide-react';
+import { useCallback, useState } from 'react';
+import { useDropzone, type FileRejection } from 'react-dropzone';
 import toast from 'react-hot-toast';
 import { useNavigate } from 'react-router';
-import { useCreateModule } from '../lib/modules';
+import { useCreateModule, useExtractDocument } from '../lib/modules';
+
+const MAX_UPLOAD_BYTES = 20 * 1024 * 1024;
 
 export function ModuleCreatePage() {
   const navigate = useNavigate();
   const createModule = useCreateModule();
+  const extractDocument = useExtractDocument();
   const [form, setForm] = useState({ title: '', description: '', content: '', tags: [] as string[] });
   const [tagInput, setTagInput] = useState('');
+
+  const onDrop = useCallback(
+    async (accepted: File[], rejections: FileRejection[]) => {
+      const rejection = rejections[0];
+
+      if (rejection) {
+        const codes = rejection.errors.map((error) => error.code);
+        toast.error(
+          codes.includes('file-too-large')
+            ? 'File is too large. Maximum 20 MB allowed.'
+            : (rejection.errors[0]?.message ?? 'File not accepted'),
+        );
+        return;
+      }
+
+      const file = accepted[0];
+
+      if (!file) {
+        return;
+      }
+
+      try {
+        const extracted = await extractDocument.mutateAsync(file);
+        setForm((previous) => ({ ...previous, content: extracted.text }));
+        toast.success(`Extracted ${extracted.characters.toLocaleString()} characters from ${file.name}`);
+      } catch (error) {
+        toast.error(error instanceof Error ? error.message : 'Could not read that file');
+      }
+    },
+    [extractDocument],
+  );
+
+  const { getRootProps, getInputProps, isDragActive } = useDropzone({
+    onDrop,
+    accept: { 'application/pdf': ['.pdf'], 'text/plain': ['.txt'] },
+    maxFiles: 1,
+    maxSize: MAX_UPLOAD_BYTES,
+    disabled: extractDocument.isPending,
+  });
 
   function addTag() {
     const tag = tagInput.trim().toLowerCase();
@@ -29,7 +72,7 @@ export function ModuleCreatePage() {
       return;
     }
     if (!form.content.trim()) {
-      toast.error('Add some study content');
+      toast.error('Paste some study content, or upload a document');
       return;
     }
 
@@ -57,7 +100,7 @@ export function ModuleCreatePage() {
 
       <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }}>
         <h1>Create a Module</h1>
-        <p className="subtitle">Paste your notes and generate questions from them.</p>
+        <p className="subtitle">Paste your notes or upload a document — its text becomes the module content.</p>
 
         <div className="form-card">
           <div className="field">
@@ -98,6 +141,32 @@ export function ModuleCreatePage() {
           </div>
 
           <div className="field">
+            <label>Or Upload a Document</label>
+            <div
+              {...getRootProps()}
+              className={`dropzone ${isDragActive ? 'active' : ''} ${
+                extractDocument.isPending ? 'has-file' : ''
+              }`}
+            >
+              <input {...getInputProps()} />
+              {extractDocument.isPending ? (
+                <div className="dropzone-inner">
+                  <span className="spinner" />
+                  <p>Reading your document...</p>
+                </div>
+              ) : (
+                <div className="dropzone-inner">
+                  <Upload size={22} />
+                  <p>
+                    Drop a PDF or TXT, or <span>browse</span>
+                  </p>
+                  <small>Max 20 MB — its text replaces the field above</small>
+                </div>
+              )}
+            </div>
+          </div>
+
+          <div className="field">
             <label>Tags</label>
             <div className="tag-input-row">
               <input
@@ -132,7 +201,7 @@ export function ModuleCreatePage() {
           <motion.button
             className="btn-primary btn-lg"
             onClick={handleSave}
-            disabled={createModule.isPending}
+            disabled={createModule.isPending || extractDocument.isPending}
             whileHover={{ scale: 1.02 }}
             whileTap={{ scale: 0.98 }}
           >
