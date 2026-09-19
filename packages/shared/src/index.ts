@@ -27,3 +27,14 @@ export type ModuleDetailDto = ModuleDto & {
   flashcardCount: number;
   questionCount: number;
 };
+
+export type GenerateResultDto = {
+  flashcardCount: number;
+  questionCount: number;
+  summary: string;
+};
+
+export type ExtractedDocumentDto = {
+  text: string;
+  characters: number;
+};

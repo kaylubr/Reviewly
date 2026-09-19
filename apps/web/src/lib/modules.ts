@@ -1,20 +1,28 @@
-import type { ModuleDetailDto, ModuleDto } from '@reviewly/shared';
+import type { ExtractedDocumentDto, GenerateResultDto, ModuleDetailDto, ModuleDto } from '@reviewly/shared';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { apiRequest, apiUpload } from './api';
 
 export const modulesQueryKey = ['modules'];
-
-export type ExtractedDocument = {
-  text: string;
-  characters: number;
-};
 
 export function useExtractDocument() {
   return useMutation({
     mutationFn: (file: File) => {
       const form = new FormData();
       form.append('file', file);
-      return apiUpload<ExtractedDocument>('/api/extract', form);
+      return apiUpload<ExtractedDocumentDto>('/api/extract', form);
+    },
+  });
+}
+
+export function useGenerateQuestions() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (moduleId: string) =>
+      apiRequest<GenerateResultDto>(`/api/modules/${moduleId}/generate`, { method: 'POST' }),
+    onSuccess: (_result, moduleId) => {
+      void queryClient.invalidateQueries({ queryKey: modulesQueryKey });
+      void queryClient.invalidateQueries({ queryKey: ['modules', moduleId] });
     },
   });
 }

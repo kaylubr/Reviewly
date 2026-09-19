@@ -1,9 +1,9 @@
 import { AnimatePresence, motion } from 'framer-motion';
-import { ArrowLeft, Brain, Play, Tag, Target, Trash2 } from 'lucide-react';
+import { ArrowLeft, Brain, Play, RotateCcw, Sparkles, Tag, Target, Trash2 } from 'lucide-react';
 import { useState } from 'react';
 import toast from 'react-hot-toast';
 import { useNavigate, useParams } from 'react-router';
-import { useDeleteModule, useModule } from '../lib/modules';
+import { useDeleteModule, useGenerateQuestions, useModule } from '../lib/modules';
 
 const MODES = [
   {
@@ -40,7 +40,21 @@ export function ModuleDetailPage() {
   const navigate = useNavigate();
   const { data: module, isPending } = useModule(id);
   const deleteModule = useDeleteModule();
+  const generateQuestions = useGenerateQuestions();
   const [deleteConfirm, setDeleteConfirm] = useState(false);
+
+  async function handleRegenerate() {
+    if (!id) return;
+
+    try {
+      const result = await generateQuestions.mutateAsync(id);
+      toast.success(
+        `Regenerated ${result.flashcardCount} flashcards and ${result.questionCount} questions`,
+      );
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : 'Failed to generate questions');
+    }
+  }
 
   async function handleDelete() {
     if (!id) return;
@@ -104,6 +118,14 @@ export function ModuleDetailPage() {
         </div>
         <div className="module-actions">
           <button
+            className="btn-ghost btn-sm regen-btn"
+            onClick={handleRegenerate}
+            disabled={generateQuestions.isPending}
+          >
+            {generateQuestions.isPending ? <span className="spinner" /> : <RotateCcw size={14} />}
+            {generateQuestions.isPending ? 'Regenerating...' : 'Regenerate'}
+          </button>
+          <button
             className="btn-ghost btn-sm delete-btn"
             onClick={() => setDeleteConfirm(true)}
             aria-label="Delete module"
@@ -112,6 +134,20 @@ export function ModuleDetailPage() {
           </button>
         </div>
       </div>
+
+      {!module.aiProcessed && (
+        <motion.div className="ai-notice" initial={{ opacity: 0, y: -8 }} animate={{ opacity: 1, y: 0 }}>
+          <Sparkles size={15} />
+          <span>This module has no questions yet. Generate them to start reviewing.</span>
+          <button
+            className="btn-primary btn-sm"
+            onClick={handleRegenerate}
+            disabled={generateQuestions.isPending}
+          >
+            Generate Now
+          </button>
+        </motion.div>
+      )}
 
       <AnimatePresence>
         {deleteConfirm && (
